@@ -1,0 +1,38 @@
+---
+kind: pipeline
+type: docker
+name: build
+steps:
+  - name: tag
+    image: alpine
+    commands:
+      - apk add git
+      - printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)" > .tags
+  - name: server
+    image: plugins/docker
+    settings:
+      registry: git.esd.cc
+      username: imlonghao
+      password:
+        from_secret: GITEA_REGISTRY_PASSWORD
+      repo: git.esd.cc/imlonghao/mtr.sb-server
+      dockerfile: Dockerfile.server
+    when:
+      branch:
+        - main
+      event:
+        - push
+  - name: worker
+    image: plugins/docker
+    settings:
+      registry: git.esd.cc
+      username: imlonghao
+      password:
+        from_secret: GITEA_REGISTRY_PASSWORD
+      repo: git.esd.cc/imlonghao/mtr.sb-worker
+      dockerfile: Dockerfile.worker
+    when:
+      branch:
+        - main
+      event:
+        - push

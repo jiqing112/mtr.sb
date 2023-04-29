@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"sync"
 	"time"
@@ -139,6 +140,8 @@ func main() {
 	}
 
 	router := gin.Default()
-	router.GET("/ping", ping)
+	api := router.Group("/api")
+	api.GET("/ping", ping)
+	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
