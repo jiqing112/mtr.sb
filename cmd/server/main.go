@@ -101,9 +101,10 @@ func ping(c *gin.Context) {
 }
 
 func main() {
-	viper.SetConfigName("config")
+	viper.SetConfigName("server")
 	viper.SetConfigType("hcl")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("/etc/mtr.sb/")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatalf("fatal error config file: %w", err)
