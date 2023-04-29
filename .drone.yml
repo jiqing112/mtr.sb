@@ -8,6 +8,7 @@ steps:
     commands:
       - apk add git
       - printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)" > .tags
+      - echo latest >> .tags
   - name: server
     image: plugins/docker
     settings:
