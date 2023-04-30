@@ -24,17 +24,32 @@ type Result struct {
 	Data interface{}
 }
 
+type Server struct {
+	Name     string
+	Provider string
+	Country  string
+	Location string
+	AffLink  string
+	Url      string
+	Conn     proto.MtrSbWorkerClient `json:"-"`
+}
+
 var (
-	serverList map[string]proto.MtrSbWorkerClient
+	serverList map[string]*Server
 	json       = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 func init() {
-	serverList = make(map[string]proto.MtrSbWorkerClient)
+	serverList = make(map[string]*Server)
 	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
 }
 
-func ping(c *gin.Context) {
+func serverListHandler(c *gin.Context) {
+	b, _ := json.Marshal(serverList)
+	c.String(http.StatusOK, "%s", b)
+}
+
+func pingHandler(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
@@ -50,7 +65,7 @@ func ping(c *gin.Context) {
 
 	var wg sync.WaitGroup
 
-	for hostname, connection := range serverList {
+	for hostname, server := range serverList {
 		wg.Add(1)
 		go func(hostname string, connection proto.MtrSbWorkerClient) {
 			defer wg.Done()
@@ -82,7 +97,7 @@ func ping(c *gin.Context) {
 				log.Printf("%s", a)
 				clientChan <- string(a)
 			}
-		}(hostname, connection)
+		}(hostname, server.Conn)
 	}
 
 	go func() {
@@ -99,6 +114,14 @@ func ping(c *gin.Context) {
 			return false
 		}
 	})
+}
+
+func getParam(m map[string]interface{}, k string) string {
+	if s, ok := m[k]; ok {
+		return s.(string)
+	} else {
+		return ""
+	}
 }
 
 func main() {
@@ -130,18 +153,28 @@ func main() {
 	// Set up a connection to the server.
 	nodes := viper.Get("nodes").([]map[string]interface{})
 	for _, node := range nodes {
-		conn, err := grpc.Dial(node["url"].(string), grpc.WithTransportCredentials(c))
+		n := Server{
+			Name:     getParam(node, "name"),
+			Provider: getParam(node, "provider"),
+			Country:  getParam(node, "country"),
+			Location: getParam(node, "location"),
+			AffLink:  getParam(node, "aff"),
+			Url:      getParam(node, "url"),
+			Conn:     nil,
+		}
+		conn, err := grpc.Dial(n.Url, grpc.WithTransportCredentials(c))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		client := proto.NewMtrSbWorkerClient(conn)
-		conn.GetState()
-		serverList[node["name"].(string)] = client
+		n.Conn = client
+		serverList[n.Name] = &n
 	}
 
 	router := gin.Default()
 	api := router.Group("/api")
-	api.GET("/ping", ping)
+	api.GET("/ping", pingHandler)
+	api.GET("/servers", serverListHandler)
 	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
