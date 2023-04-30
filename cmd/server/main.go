@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
 	"github.com/gin-gonic/gin"
+	"github.com/ip2location/ip2location-go/v9"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
 	"github.com/spf13/viper"
@@ -37,6 +38,7 @@ type Server struct {
 var (
 	serverList map[string]*Server
 	json       = jsoniter.ConfigCompatibleWithStandardLibrary
+	ipDB       *ip2location.DB
 )
 
 func init() {
@@ -47,6 +49,20 @@ func init() {
 func serverListHandler(c *gin.Context) {
 	b, _ := json.Marshal(serverList)
 	c.String(http.StatusOK, "%s", b)
+}
+
+func ipHandler(c *gin.Context) {
+	ip, ok := c.GetQuery("t")
+	if !ok {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	results, err := ipDB.Get_all(ip)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.String(http.StatusOK, "%s, %s, %s", results.City, results.Region, results.Country_long)
 }
 
 func pingHandler(c *gin.Context) {
@@ -171,10 +187,17 @@ func main() {
 		serverList[n.Name] = &n
 	}
 
+	// ip2location
+	ipDB, err = ip2location.OpenDB(viper.GetString("ip2location_db_path"))
+	if err != nil {
+		log.Fatalf("fail to load ip2location db: %v", err)
+	}
+
 	router := gin.Default()
 	api := router.Group("/api")
 	api.GET("/ping", pingHandler)
 	api.GET("/servers", serverListHandler)
+	api.GET("/ip", ipHandler)
 	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
