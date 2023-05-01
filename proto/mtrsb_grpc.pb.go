@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MtrSbWorkerClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (MtrSbWorker_PingClient, error)
+	Version(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error)
 }
 
 type mtrSbWorkerClient struct {
@@ -65,11 +66,21 @@ func (x *mtrSbWorkerPingClient) Recv() (*PingResponse, error) {
 	return m, nil
 }
 
+func (c *mtrSbWorkerClient) Version(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error) {
+	out := new(VersionResponse)
+	err := c.cc.Invoke(ctx, "/MtrSbWorker/Version", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MtrSbWorkerServer is the server API for MtrSbWorker service.
 // All implementations must embed UnimplementedMtrSbWorkerServer
 // for forward compatibility
 type MtrSbWorkerServer interface {
 	Ping(*PingRequest, MtrSbWorker_PingServer) error
+	Version(context.Context, *VersionRequest) (*VersionResponse, error)
 	mustEmbedUnimplementedMtrSbWorkerServer()
 }
 
@@ -79,6 +90,9 @@ type UnimplementedMtrSbWorkerServer struct {
 
 func (UnimplementedMtrSbWorkerServer) Ping(*PingRequest, MtrSbWorker_PingServer) error {
 	return status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedMtrSbWorkerServer) Version(context.Context, *VersionRequest) (*VersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Version not implemented")
 }
 func (UnimplementedMtrSbWorkerServer) mustEmbedUnimplementedMtrSbWorkerServer() {}
 
@@ -114,13 +128,36 @@ func (x *mtrSbWorkerPingServer) Send(m *PingResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _MtrSbWorker_Version_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MtrSbWorkerServer).Version(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MtrSbWorker/Version",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MtrSbWorkerServer).Version(ctx, req.(*VersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MtrSbWorker_ServiceDesc is the grpc.ServiceDesc for MtrSbWorker service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var MtrSbWorker_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "MtrSbWorker",
 	HandlerType: (*MtrSbWorkerServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Version",
+			Handler:    _MtrSbWorker_Version_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Ping",

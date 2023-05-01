@@ -5,6 +5,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Root from "./Root";
 import Ping from "./Ping";
 import Home from "./Home";
+import Version from "./Version";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "ping",
         element: <Ping />,
+      },
+      {
+        path: "version",
+        element: <Version />,
       },
     ],
   },

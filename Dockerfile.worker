@@ -1,7 +1,7 @@
 FROM golang:1.20.3 AS builder
 WORKDIR /app
 ADD . .
-RUN CGO_ENABLED=0 go build -v -o worker cmd/worker/*
+RUN ./build.sh worker
 
 FROM ubuntu
 WORKDIR /app

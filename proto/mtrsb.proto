@@ -4,6 +4,7 @@ option go_package = "proto/";
 
 service MtrSbWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
+  rpc Version (VersionRequest) returns (VersionResponse);
 }
 
 enum Protocol {
@@ -50,4 +51,10 @@ message HostLookupResult {
 message Error {
   string message = 1;
   string title = 2;
+}
+
+message VersionRequest {}
+
+message VersionResponse {
+  string version = 1;
 }

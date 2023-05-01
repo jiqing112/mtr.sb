@@ -82,6 +82,13 @@ export interface Error {
   title: string;
 }
 
+export interface VersionRequest {
+}
+
+export interface VersionResponse {
+  version: string;
+}
+
 function createBasePingRequest(): PingRequest {
   return { host: "", protocol: 0 };
 }
@@ -622,8 +629,109 @@ export const Error = {
   },
 };
 
+function createBaseVersionRequest(): VersionRequest {
+  return {};
+}
+
+export const VersionRequest = {
+  encode(_: VersionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VersionRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVersionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): VersionRequest {
+    return {};
+  },
+
+  toJSON(_: VersionRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<VersionRequest>, I>>(base?: I): VersionRequest {
+    return VersionRequest.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<VersionRequest>, I>>(_: I): VersionRequest {
+    const message = createBaseVersionRequest();
+    return message;
+  },
+};
+
+function createBaseVersionResponse(): VersionResponse {
+  return { version: "" };
+}
+
+export const VersionResponse = {
+  encode(message: VersionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.version !== "") {
+      writer.uint32(10).string(message.version);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VersionResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVersionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.version = reader.string();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): VersionResponse {
+    return { version: isSet(object.version) ? String(object.version) : "" };
+  },
+
+  toJSON(message: VersionResponse): unknown {
+    const obj: any = {};
+    message.version !== undefined && (obj.version = message.version);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<VersionResponse>, I>>(base?: I): VersionResponse {
+    return VersionResponse.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<VersionResponse>, I>>(object: I): VersionResponse {
+    const message = createBaseVersionResponse();
+    message.version = object.version ?? "";
+    return message;
+  },
+};
+
 export interface MtrSbWorker {
   Ping(request: PingRequest): Observable<PingResponse>;
+  Version(request: VersionRequest): Promise<VersionResponse>;
 }
 
 export class MtrSbWorkerClientImpl implements MtrSbWorker {
@@ -633,11 +741,18 @@ export class MtrSbWorkerClientImpl implements MtrSbWorker {
     this.service = opts?.service || "MtrSbWorker";
     this.rpc = rpc;
     this.Ping = this.Ping.bind(this);
+    this.Version = this.Version.bind(this);
   }
   Ping(request: PingRequest): Observable<PingResponse> {
     const data = PingRequest.encode(request).finish();
     const result = this.rpc.serverStreamingRequest(this.service, "Ping", data);
     return result.pipe(map((data) => PingResponse.decode(_m0.Reader.create(data))));
+  }
+
+  Version(request: VersionRequest): Promise<VersionResponse> {
+    const data = VersionRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "Version", data);
+    return promise.then((data) => VersionResponse.decode(_m0.Reader.create(data)));
   }
 }
 

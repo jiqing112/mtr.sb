@@ -42,6 +42,7 @@ var (
 	serverList map[string]*Server
 	json       = jsoniter.ConfigCompatibleWithStandardLibrary
 	ipDB       *ip2location.DB
+	Version    = "N/A"
 )
 
 func init() {
@@ -68,12 +69,66 @@ func ipHandler(c *gin.Context) {
 	c.String(http.StatusOK, "%s, %s, %s", results.City, results.Region, results.Country_long)
 }
 
+func versionHandler(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Transfer-Encoding", "chunked")
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
+	defer cancel()
+
+	clientChan := make(chan string)
+	doneChan := make(chan bool)
+
+	var wg sync.WaitGroup
+
+	a, _ := json.Marshal(Result{
+		Node: "Web",
+		Data: Version,
+	})
+	log.Printf("%s", a)
+	go func() { clientChan <- string(a) }()
+
+	for hostname, server := range serverList {
+		wg.Add(1)
+		go func(hostname string, connection proto.MtrSbWorkerClient) {
+			defer wg.Done()
+			r, err := connection.Version(ctx, &proto.VersionRequest{})
+			if err != nil {
+				log.Printf("could not greet: %v", err)
+				return
+			}
+			a, _ := json.Marshal(Result{
+				Node: hostname,
+				Data: r.GetVersion(),
+			})
+			log.Printf("%s", a)
+			clientChan <- string(a)
+		}(hostname, server.Conn)
+	}
+
+	go func() {
+		wg.Wait()
+		doneChan <- true
+	}()
+
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case msg := <-clientChan:
+			c.SSEvent("message", msg)
+			return true
+		case <-doneChan:
+			return false
+		}
+	})
+}
+
 func pingHandler(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
 	c.Writer.Header().Set("Transfer-Encoding", "chunked")
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 
 	target := c.Query("host")
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
@@ -218,6 +273,7 @@ func main() {
 	api.GET("/ping", pingHandler)
 	api.GET("/servers", serverListHandler)
 	api.GET("/ip", ipHandler)
+	api.GET("/version", versionHandler)
 	router.NoRoute(catchAllPath, gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
