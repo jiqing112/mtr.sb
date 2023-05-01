@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
+	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/ip2location/ip2location-go/v9"
 	jsoniter "github.com/json-iterator/go"
@@ -140,16 +142,8 @@ func getParam(m map[string]interface{}, k string) string {
 	}
 }
 
-func main() {
-	viper.SetConfigName("server")
-	viper.SetConfigType("hcl")
-	viper.AddConfigPath("/etc/mtr.sb/")
-	viper.AddConfigPath("./")
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatalf("fatal error config file: %w", err)
-	}
-	//
+func initServerList() {
+	serverList = make(map[string]*Server)
 	cert, err := tls.LoadX509KeyPair(viper.GetString("cert_path"), viper.GetString("key_path"))
 	if err != nil {
 		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
@@ -166,7 +160,6 @@ func main() {
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      certPool,
 	})
-	// Set up a connection to the server.
 	nodes := viper.Get("nodes").([]map[string]interface{})
 	for _, node := range nodes {
 		n := Server{
@@ -186,6 +179,25 @@ func main() {
 		n.Conn = client
 		serverList[n.Name] = &n
 	}
+}
+
+func main() {
+	viper.SetConfigName("server")
+	viper.SetConfigType("hcl")
+	viper.AddConfigPath("/etc/mtr.sb/")
+	viper.AddConfigPath("./")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("fatal error config file: %w", err)
+	}
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+		initServerList()
+	})
+	viper.WatchConfig()
+
+	// Set up a connection to the server.
+	initServerList()
 
 	// ip2location
 	ipDB, err = ip2location.OpenDB(viper.GetString("ip2location_db_path"))
