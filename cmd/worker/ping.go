@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"git.esd.cc/imlonghao/mtr.sb/pkgs/ipfilter"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
 	"log"
 	"net"
@@ -64,6 +65,14 @@ func (s *server) Ping(in *proto.PingRequest, server proto.MtrSbWorker_PingServer
 		}}})
 		return fmt.Errorf("no target")
 	}
+	if ipfilter.IsPrivateIP(target) {
+		server.Send(&proto.PingResponse{Response: &proto.PingResponse_Error{Error: &proto.Error{
+			Title:   "bad target",
+			Message: "target is private ip address",
+		}}})
+		return fmt.Errorf("bad target")
+	}
+
 	server.Send(&proto.PingResponse{Response: &proto.PingResponse_Lookup{Lookup: &proto.HostLookupResult{
 		Ip: target,
 	}}})
