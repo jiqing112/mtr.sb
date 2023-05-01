@@ -23,8 +23,8 @@ export default function Version() {
 
   const x = () => {
     const tmpData = {...data}
-    const r = [<li>Web - {data["web"] ?? "N/A"}</li>, <li></li>]
-    delete tmpData["web"]
+    const r = [<li>Web - {data["Web"] ?? "N/A"}</li>, <li></li>]
+    delete tmpData["Web"]
     for (const [key, value] of Object.entries(tmpData)) {
       r.push(<li>{key} - {value}</li>)
     }
