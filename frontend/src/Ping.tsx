@@ -94,7 +94,7 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'Best',
     dataIndex: 'best',
-    defaultSortOrder: 'descend',
+    defaultSortOrder: 'ascend',
     sorter: (a, b) => a.best - b.best,
   },
   {
