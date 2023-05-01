@@ -31,7 +31,7 @@ type Server struct {
 	Country  string
 	Location string
 	AffLink  string
-	Url      string
+	Url      string                  `json:"-"`
 	Conn     proto.MtrSbWorkerClient `json:"-"`
 }
 
