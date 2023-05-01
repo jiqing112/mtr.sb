@@ -2,6 +2,10 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Form, Input, Row, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PingResponse} from "../../proto/mtrsb";
+import {useOutletContext} from "react-router-dom";
+import {serverMap} from "./Root";
+import ReactCountryFlag from "react-country-flag";
+import {LinkOutlined} from "@ant-design/icons";
 
 interface DataStruct {
   [key: string]: PingResponse[];
@@ -9,8 +13,12 @@ interface DataStruct {
 
 interface PingTable {
   key: React.Key;
-  node: string;
+  country: string;
+  location: string;
+  provider: string;
+  aff: string;
   ip: string;
+  ip_geo: string;
   loss: number;
   sent: number;
   last: number;
@@ -22,12 +30,46 @@ interface PingTable {
 
 const columns: ColumnsType<PingTable> = [
   {
-    title: 'Node',
-    dataIndex: 'node',
+    title: 'Location',
+    dataIndex: 'location',
+    render: (_, { country, location }) => (
+      <>
+        <ReactCountryFlag title={country} countryCode={country} svg style={{
+          width: '21px',
+          height: '15px',
+          marginRight: '5px',
+        }} />
+        <span>{location}</span>
+      </>
+    ),
+  },
+  {
+    title: 'Provider',
+    dataIndex: 'provider',
+    render: (_, { provider, aff }) => {
+      if (aff !== "") {
+        return (
+          <>
+            <a href={aff} target="_blank" rel="noreferrer">{provider} <LinkOutlined /></a>
+          </>
+        )
+      } else {
+        return (
+          <>
+            <span>{provider}</span>
+          </>
+        )
+      }
+    },
   },
   {
     title: 'IP',
     dataIndex: 'ip',
+    render: (_, { ip, ip_geo }) => (
+      <span>{ip} <small style={{
+        color: "gray"
+      }}>{ip_geo}</small></span>
+    ),
   },
   {
     title: 'Loss',
@@ -78,6 +120,7 @@ export default function Ping() {
   const [data, setData] = useState({} as DataStruct);
   const [target, setTarget] = useState("");
   const [start, setStart] = useState(false);
+  const [getIP, serverList] = useOutletContext() as [(ip: string) => string, serverMap];
 
   useEffect(() => {
     if (!start || target === "") {
@@ -111,10 +154,15 @@ export default function Ping() {
     let r: PingTable[] = []
     for (const [key, value] of Object.entries<PingResponse[]>(data)) {
       const rttList = value.filter((x) => x.reply !== undefined).map((x)=>x.reply!.rtt!)
+      const ip = value.filter((x) => x.lookup !== undefined).at(0)?.lookup!.ip!
       r.push({
         key: key+value.length,
-        node: key,
-        ip: value.filter((x) => x.lookup !== undefined).at(0)?.lookup!.ip!,
+        country: serverList[key].country,
+        location: serverList[key].location,
+        provider: serverList[key].provider,
+        aff: serverList[key].aff_link,
+        ip: ip,
+        ip_geo: getIP(ip),
         loss: value.filter((x) => x.timeout !== undefined).length,
         sent: value.filter((x) => x.reply !== undefined || x.timeout !== undefined).length,
         last: rttList.at(-1) ?? -1,
