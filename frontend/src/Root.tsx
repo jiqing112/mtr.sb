@@ -23,6 +23,7 @@ export interface serverMap {
 export default function Root() {
   const [ipLocation, setIpLocation] = React.useState({} as ipInfo);
   const [serverList, setServerList] = React.useState({} as serverMap);
+  const inProgress = React.useRef(false);
 
   useEffect(() => {
     if (Object.keys(serverList).length > 0) {
@@ -37,13 +38,18 @@ export default function Root() {
     if (ipLocation[ip] !== undefined) {
       return ipLocation[ip]
     }
+    if (inProgress.current) {
+      return ""
+    }
+    inProgress.current = true
     fetch(`/api/ip?t=${ip}`).then(r => r.text()).then(r => {
       const newIpLocation = {...ipLocation}
       newIpLocation[ip] = r
       setIpLocation(newIpLocation)
+      inProgress.current = false
     })
     return ""
-  }, [ipLocation])
+  }, [ipLocation, inProgress])
 
   const {
     token: { colorBgContainer },
