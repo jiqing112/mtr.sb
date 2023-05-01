@@ -18,6 +18,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -181,6 +182,13 @@ func initServerList() {
 	}
 }
 
+func catchAllPath(c *gin.Context) {
+	p := filepath.Join("build", filepath.Clean("/"+c.Request.URL.Path))
+	if _, err := os.Stat(p); err != nil {
+		c.Request.URL.Path = "/"
+	}
+}
+
 func main() {
 	viper.SetConfigName("server")
 	viper.SetConfigType("hcl")
@@ -210,6 +218,6 @@ func main() {
 	api.GET("/ping", pingHandler)
 	api.GET("/servers", serverListHandler)
 	api.GET("/ip", ipHandler)
-	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("build", false))))
+	router.NoRoute(catchAllPath, gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
