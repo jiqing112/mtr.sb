@@ -70,7 +70,7 @@ func (s *server) Ping(in *proto.PingRequest, server proto.MtrSbWorker_PingServer
 
 	ctx, cancel := context.WithTimeout(server.Context(), time.Second*10)
 	defer cancel()
-	args := []string{"-i", "0.5", "-c", "10", "-O", target}
+	args := []string{"-n", "-i", "0.5", "-c", "10", "-O", target}
 	cmd := exec.CommandContext(ctx, "ping", args...)
 	stdout, err := cmd.StdoutPipe()
 	err = cmd.Start()
