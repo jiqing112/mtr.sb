@@ -143,8 +143,8 @@ func getParam(m map[string]interface{}, k string) string {
 func main() {
 	viper.SetConfigName("server")
 	viper.SetConfigType("hcl")
-	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/mtr.sb/")
+	viper.AddConfigPath("./")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatalf("fatal error config file: %w", err)

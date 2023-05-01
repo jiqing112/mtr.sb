@@ -19,8 +19,8 @@ type server struct {
 func main() {
 	viper.SetConfigName("worker")
 	viper.SetConfigType("hcl")
-	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/mtr.sb/")
+	viper.AddConfigPath("./")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatalf("fatal error config file: %w", err)
