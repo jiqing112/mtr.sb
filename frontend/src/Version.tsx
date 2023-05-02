@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 
 interface DataStruct {
   [key: string]: string;
@@ -6,10 +6,10 @@ interface DataStruct {
 
 export default function Version() {
   const [data, setData] = useState({} as DataStruct)
-  const initEd = useRef(false)
+  const [initEd, setInitEd] = useState(false)
 
   useEffect(() => {
-    if (initEd.current) {
+    if (initEd) {
       return
     }
     const sse = new EventSource(`/api/version`);
@@ -22,18 +22,18 @@ export default function Version() {
         return newData
       })
     };
-    initEd.current = true
-    return () => {
-      sse.close()
+    sse.onerror = () => {
+      setInitEd(true)
     }
-  }, []);
+    return () => sse.close()
+  }, [initEd]);
 
   const x = () => {
     const tmpData = {...data}
-    const r = [<li>Web - {data["Web"] ?? "N/A"}</li>, <li></li>]
+    const r = [<li key="Web">Web - {data["Web"] ?? "N/A"}</li>, <li key="Empty"></li>]
     delete tmpData["Web"]
     for (const [key, value] of Object.entries(tmpData)) {
-      r.push(<li>{key} - {value}</li>)
+      r.push(<li key={key}>{key} - {value}</li>)
     }
     return r
   }
