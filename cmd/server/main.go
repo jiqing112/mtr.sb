@@ -69,7 +69,7 @@ func ipHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.String(http.StatusOK, "%s, %s, %s [AS%s]", results.City, results.Region, results.Country_long, bgptools.Ip2Asn(ip))
+	c.String(http.StatusOK, "%s, %s, %s [AS%d]", results.City, results.Region, results.Country_long, bgptools.Ip2Asn(ip))
 }
 
 func versionHandler(c *gin.Context) {
