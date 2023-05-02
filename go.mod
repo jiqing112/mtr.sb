@@ -3,9 +3,11 @@ module git.esd.cc/imlonghao/mtr.sb
 go 1.20
 
 require (
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/ip2location/ip2location-go/v9 v9.6.0
 	github.com/json-iterator/go v1.1.12
+	github.com/praserx/ipconv v1.2.1
 	github.com/spf13/viper v1.15.0
 	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
@@ -14,7 +16,6 @@ require (
 require (
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect

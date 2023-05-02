@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"git.esd.cc/imlonghao/mtr.sb/pkgs/bgptools"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
@@ -68,7 +69,7 @@ func ipHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.String(http.StatusOK, "%s, %s, %s", results.City, results.Region, results.Country_long)
+	c.String(http.StatusOK, "%s, %s, %s [AS%s]", results.City, results.Region, results.Country_long, bgptools.Ip2Asn(ip))
 }
 
 func versionHandler(c *gin.Context) {
@@ -305,6 +306,9 @@ func main() {
 
 	// Set up a connection to the server.
 	initServerList()
+
+	// init bgp.tools table.txt
+	bgptools.InitNetwork(Version)
 
 	// ip2location
 	ipDB, err = ip2location.OpenDB(viper.GetString("ip2location_db_path"))
