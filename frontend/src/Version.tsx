@@ -6,8 +6,13 @@ interface DataStruct {
 
 export default function Version() {
   const [data, setData] = useState({} as DataStruct)
+  const [initEd, setInitEd] = useState(false)
 
   useEffect(() => {
+    if (initEd) {
+      return
+    }
+    setInitEd(true)
     const sse = new EventSource(`/api/version`);
     sse.onmessage = (ev) => {
       let parsed = JSON.parse(ev.data)
@@ -17,9 +22,13 @@ export default function Version() {
         newData[nodeName] = parsed.data
         return newData
       })
+
     };
-    return () => sse.close()
-  }, []);
+    return () => {
+      setInitEd(false)
+      sse.close()
+    }
+  }, [initEd]);
 
   const x = () => {
     const tmpData = {...data}
