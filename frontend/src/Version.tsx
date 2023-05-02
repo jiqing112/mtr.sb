@@ -25,7 +25,6 @@ export default function Version() {
 
     };
     return () => {
-      setInitEd(false)
       sse.close()
     }
   }, [initEd]);
