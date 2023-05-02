@@ -67,7 +67,7 @@ export default function Root() {
         ]}
       />
     </Header>
-    <Content style={{ padding: '20px 50px' }}>
+    <Content>
       <div className="site-layout-content" style={{ background: colorBgContainer }}>
         <Outlet context={[getIP, serverList]} />
       </div>

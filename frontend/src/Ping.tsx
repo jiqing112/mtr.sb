@@ -32,6 +32,7 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'Location',
     dataIndex: 'location',
+    width: 150,
     render: (_, { country, location }) => (
       <>
         <ReactCountryFlag title={country} countryCode={country} svg style={{
@@ -46,6 +47,7 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'Provider',
     dataIndex: 'provider',
+    width: 100,
     render: (_, { provider, aff }) => {
       if (aff !== "") {
         return (
@@ -65,6 +67,7 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'IP',
     dataIndex: 'ip',
+    width: 500,
     render: (_, { ip, ip_geo }) => (
       <span>{ip} <small style={{
         color: "gray"
@@ -74,37 +77,44 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'Loss',
     dataIndex: 'loss',
+    width: 100,
     sorter: (a, b) => a.loss - b.loss,
   },
   {
     title: 'Sent',
     dataIndex: 'sent',
+    width: 100,
     sorter: (a, b) => a.sent - b.sent,
   },
   {
     title: 'Last',
     dataIndex: 'last',
+    width: 100,
     sorter: (a, b) => a.last - b.last,
   },
   {
     title: 'Avg',
     dataIndex: 'avg',
+    width: 100,
     sorter: (a, b) => a.avg - b.avg,
   },
   {
     title: 'Best',
     dataIndex: 'best',
     defaultSortOrder: 'ascend',
+    width: 100,
     sorter: (a, b) => a.best - b.best,
   },
   {
     title: 'Worst',
     dataIndex: 'worst',
+    width: 100,
     sorter: (a, b) => a.worst - b.worst,
   },
   {
     title: 'Stdev',
     dataIndex: 'stdev',
+    width: 100,
     sorter: (a, b) => a.stdev - b.stdev,
   },
 ];
@@ -201,6 +211,6 @@ export default function Ping() {
         </Col>
       </Row>
     </Form>
-    <Table columns={columns} dataSource={tableData()} />
+    <Table columns={columns} dataSource={tableData()} scroll={{ x: 1300 }} sticky />
   </>
 }
