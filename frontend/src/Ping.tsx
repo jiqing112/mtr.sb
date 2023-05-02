@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Form, Input, Row, Table} from "antd";
+import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PingResponse} from "../../proto/mtrsb";
 import {useOutletContext} from "react-router-dom";
 import {serverMap} from "./Root";
 import ReactCountryFlag from "react-country-flag";
 import {LinkOutlined} from "@ant-design/icons";
+
+const { Option } = Select;
 
 interface DataStruct {
   [key: string]: PingResponse[];
@@ -129,6 +131,8 @@ export default function Ping() {
   const [form] = Form.useForm();
   const [data, setData] = useState({} as DataStruct);
   const [target, setTarget] = useState("");
+  const [protocol, setProtocol] = useState("");
+  const [rd, setRd] = useState(1);
   const [start, setStart] = useState(false);
   const [getIP, serverList] = useOutletContext() as [(ip: string) => string, serverMap];
 
@@ -158,7 +162,7 @@ export default function Ping() {
       sse.close()
       setStart(false)
     }
-  }, [start, target]);
+  }, [start, target, protocol, rd]);
 
   let tableData = () => {
     let r: PingTable[] = []
@@ -188,23 +192,37 @@ export default function Ping() {
   return <>
     <h1>Ping</h1>
     <Form form={form}>
-      <Row>
-        <Col span={12}>
+      <Row gutter={16}>
+        <Col xs={24} sm={16} lg={6}>
           <Form.Item label="Target" name="Target">
             <Input placeholder="" />
           </Form.Item>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={8} lg={6}>
+          <Form.Item label="Protocol" name="Protocol" initialValue="0">
+            <Select>
+              <Option value="0">Auto</Option>
+              <Option value="1">IPv4</Option>
+              <Option value="2">IPv6</Option>
+            </Select>
+          </Form.Item>
         </Col>
-        <Col span={3}>
+        <Col xs={24} sm={8} lg={6}>
+          <Form.Item name="RD">
+            <Checkbox checked={true}>Remote DNS</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col xs={12} sm={8} lg={3}>
           <Form.Item>
             <Button type="primary" onClick={() => {
               setTarget(form.getFieldValue("Target"))
+              setProtocol(form.getFieldValue("Protocol"))
+              setRd(form.getFieldInstance("RD").input.checked ? 1 : 0)
               setStart(true)
             }} disabled={start}>Start</Button>
           </Form.Item>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} lg={3}>
           <Form.Item>
             <Button danger type="primary" onClick={() => setStart(false)} disabled={!start}>Stop</Button>
           </Form.Item>

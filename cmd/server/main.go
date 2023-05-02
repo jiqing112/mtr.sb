@@ -16,9 +16,11 @@ import (
 	"google.golang.org/grpc/credentials"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -130,7 +132,43 @@ func pingHandler(c *gin.Context) {
 	c.Writer.Header().Set("Connection", "keep-alive")
 	c.Writer.Header().Set("Transfer-Encoding", "chunked")
 
-	target := c.Query("host")
+	target := c.Query("t")
+	protocolStr := c.Query("p")
+	remoteDNS := c.Query("rd")
+
+	protocol, err := strconv.Atoi(protocolStr)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if remoteDNS == "0" {
+		newTarget := ""
+		ips, _ := net.LookupIP(target)
+		for _, ip := range ips {
+			switch proto.Protocol(protocol) {
+			case proto.Protocol_ANY:
+				newTarget = ip.String()
+				break
+			case proto.Protocol_IPV4:
+				if ipv4 := ip.To4(); ipv4 != nil {
+					newTarget = ip.String()
+					break
+				}
+			case proto.Protocol_IPV6:
+				if ipv6 := ip.To16(); ipv6 != nil {
+					newTarget = ip.String()
+					break
+				}
+			}
+		}
+		if newTarget == "" {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("domain can't resolve"))
+			return
+		}
+		target = newTarget
+	}
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
 	defer cancel()
 
@@ -145,7 +183,7 @@ func pingHandler(c *gin.Context) {
 			defer wg.Done()
 			r, err := connection.Ping(ctx, &proto.PingRequest{
 				Host:     target,
-				Protocol: 0,
+				Protocol: proto.Protocol(protocol),
 			})
 			if err != nil {
 				log.Printf("could not greet: %v", err)
