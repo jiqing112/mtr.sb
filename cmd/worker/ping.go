@@ -45,19 +45,20 @@ func (s *server) Ping(in *proto.PingRequest, server proto.MtrSbWorker_PingServer
 		switch protocol {
 		case proto.Protocol_ANY:
 			target = ip.String()
-			break
+			goto END
 		case proto.Protocol_IPV4:
 			if ipv4 := ip.To4(); ipv4 != nil {
 				target = ip.String()
-				break
+				goto END
 			}
 		case proto.Protocol_IPV6:
-			if ipv6 := ip.To16(); ipv6 != nil {
+			if ipv4 := ip.To4(); ipv4 == nil {
 				target = ip.String()
-				break
+				goto END
 			}
 		}
 	}
+END:
 	if target == "" {
 		server.Send(&proto.PingResponse{Response: &proto.PingResponse_Error{Error: &proto.Error{
 			Title:   "no target",

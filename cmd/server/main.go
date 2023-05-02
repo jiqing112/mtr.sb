@@ -149,19 +149,20 @@ func pingHandler(c *gin.Context) {
 			switch proto.Protocol(protocol) {
 			case proto.Protocol_ANY:
 				newTarget = ip.String()
-				break
+				goto END
 			case proto.Protocol_IPV4:
 				if ipv4 := ip.To4(); ipv4 != nil {
 					newTarget = ip.String()
-					break
+					goto END
 				}
 			case proto.Protocol_IPV6:
-				if ipv6 := ip.To16(); ipv6 != nil {
+				if ipv4 := ip.To4(); ipv4 == nil {
 					newTarget = ip.String()
-					break
+					goto END
 				}
 			}
 		}
+	END:
 		if newTarget == "" {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("domain can't resolve"))
 			return
