@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 interface DataStruct {
   [key: string]: string;
@@ -6,10 +6,10 @@ interface DataStruct {
 
 export default function Version() {
   const [data, setData] = useState({} as DataStruct)
-  const [initEd, setInitEd] = useState(false)
+  const initEd = useRef(false)
 
   useEffect(() => {
-    if (initEd) {
+    if (initEd.current) {
       return
     }
     const sse = new EventSource(`/api/version`);
@@ -22,11 +22,11 @@ export default function Version() {
         return newData
       })
     };
-    setInitEd(true)
+    initEd.current = true
     return () => {
       sse.close()
     }
-  }, [initEd]);
+  }, []);
 
   const x = () => {
     const tmpData = {...data}
