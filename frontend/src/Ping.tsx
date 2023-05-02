@@ -141,7 +141,7 @@ export default function Ping() {
       return
     }
     setData({})
-    const sse = new EventSource(`/api/ping?host=${target}`);
+    const sse = new EventSource(`/api/ping?t=${target}&p=${protocol}&rd=${rd}`);
     sse.onmessage = (ev) => {
       let parsed = JSON.parse(ev.data)
       let nodeName = parsed.node
