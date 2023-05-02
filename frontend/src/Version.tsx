@@ -12,7 +12,6 @@ export default function Version() {
     if (initEd) {
       return
     }
-    setInitEd(true)
     const sse = new EventSource(`/api/version`);
     sse.onmessage = (ev) => {
       let parsed = JSON.parse(ev.data)
@@ -22,8 +21,8 @@ export default function Version() {
         newData[nodeName] = parsed.data
         return newData
       })
-
     };
+    setInitEd(true)
     return () => {
       sse.close()
     }
