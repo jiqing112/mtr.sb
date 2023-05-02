@@ -209,7 +209,7 @@ export default function Ping() {
         </Col>
         <Col xs={24} sm={8} lg={6}>
           <Form.Item name="RD">
-            <Checkbox checked={true}>Remote DNS</Checkbox>
+            <Checkbox defaultChecked={true}>Remote DNS</Checkbox>
           </Form.Item>
         </Col>
         <Col xs={12} sm={8} lg={3}>
