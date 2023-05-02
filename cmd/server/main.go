@@ -102,7 +102,7 @@ func versionHandler(c *gin.Context) {
 				log.Printf("could not greet: %v", err)
 				responses, _ = json.Marshal(Result{
 					Node: hostname,
-					Data: []byte("OFFLINE"),
+					Data: "OFFLINE",
 				})
 			} else {
 				responses, _ = json.Marshal(Result{
