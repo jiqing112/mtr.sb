@@ -96,17 +96,22 @@ func versionHandler(c *gin.Context) {
 		wg.Add(1)
 		go func(hostname string, connection proto.MtrSbWorkerClient) {
 			defer wg.Done()
+			var responses []byte
 			r, err := connection.Version(ctx, &proto.VersionRequest{})
 			if err != nil {
 				log.Printf("could not greet: %v", err)
-				return
+				responses, _ = json.Marshal(Result{
+					Node: hostname,
+					Data: []byte("OFFLINE"),
+				})
+			} else {
+				responses, _ = json.Marshal(Result{
+					Node: hostname,
+					Data: r.GetVersion(),
+				})
 			}
-			a, _ := json.Marshal(Result{
-				Node: hostname,
-				Data: r.GetVersion(),
-			})
-			log.Printf("%s", a)
-			clientChan <- string(a)
+			log.Printf("%s", responses)
+			clientChan <- string(responses)
 		}(hostname, server.Conn)
 	}
 
