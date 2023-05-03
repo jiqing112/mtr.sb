@@ -42,14 +42,14 @@ const columns: ColumnsType<PingTable> = [
           height: '15px',
           marginRight: '5px',
         }} />
-        <span>{location}</span>
+        {location}
       </>
     ),
   },
   {
     title: 'Provider',
     dataIndex: 'provider',
-    width: 100,
+    width: 150,
     render: (_, { provider, aff }) => {
       if (aff !== "") {
         return (
@@ -60,7 +60,7 @@ const columns: ColumnsType<PingTable> = [
       } else {
         return (
           <>
-            <span>{provider}</span>
+            {provider}
           </>
         )
       }
@@ -69,11 +69,14 @@ const columns: ColumnsType<PingTable> = [
   {
     title: 'IP',
     dataIndex: 'ip',
+    className: 'ant-table-cell-ellipsis',
     width: 500,
     render: (_, { ip, ip_geo }) => (
-      <span>{ip} <small style={{
-        color: "gray"
-      }}>{ip_geo}</small></span>
+      <>
+        {ip} <small style={{
+          color: "gray"
+        }}>{ip_geo}</small>
+      </>
     ),
   },
   {
@@ -229,6 +232,6 @@ export default function Ping() {
         </Col>
       </Row>
     </Form>
-    <Table columns={columns} dataSource={tableData()} scroll={{ x: 1300 }} sticky />
+    <Table columns={columns} dataSource={tableData()} scroll={{ x: 1300 }} sticky size="small" pagination={false} />
   </>
 }
