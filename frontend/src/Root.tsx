@@ -63,7 +63,6 @@ export default function Root() {
         items={[
           {key: "index", label: <NavLink to='/'>MTR.SB</NavLink>},
           {key: "ping", label: <NavLink to='/ping'>ping</NavLink>},
-          {key: "version", label: <NavLink to='/version'>version</NavLink>},
         ]}
       />
     </Header>
