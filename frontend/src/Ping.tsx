@@ -76,7 +76,7 @@ const columns: ColumnsType<PingTable> = [
         {ip} <small style={{
           color: "gray"
         }}>{ip_geo.city}, {ip_geo.region}, {ip_geo.country}
-        [<a href={`https://bgp.tools/asn/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asnname}>AS{ip_geo.asn}</a>]
+        [<a href={`https://bgp.tools/asn/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>AS{ip_geo.asn}</a>]
       </small>
       </>
     ),

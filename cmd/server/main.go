@@ -45,8 +45,8 @@ type IPGeo struct {
 	Country string
 	Region  string
 	City    string
-	ASN     int
-	ASNName string
+	Asn     int
+	AsnName string
 }
 
 var (
@@ -82,8 +82,8 @@ func ipHandler(c *gin.Context) {
 		Country: results.Country_long,
 		Region:  results.Region,
 		City:    results.City,
-		ASN:     asn,
-		ASNName: bgptools.Asn2Name(asn),
+		Asn:     asn,
+		AsnName: bgptools.Asn2Name(asn),
 	})
 	c.String(http.StatusOK, "%s", b)
 }

@@ -5,11 +5,11 @@ import "./Root.css"
 const { Header, Content, Footer } = Layout;
 
 export interface ipGeo {
-  country: string,
-  region : string,
-  city   : string,
-  asn    : number,
-  asnname: string
+  country : string,
+  region  : string,
+  city    : string,
+  asn     : number,
+  asn_name: string
 }
 
 interface ipInfo {
