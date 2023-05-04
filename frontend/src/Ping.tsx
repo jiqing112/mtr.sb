@@ -170,6 +170,9 @@ export default function Ping() {
   let tableData = () => {
     let r: PingTable[] = []
     for (const [key, value] of Object.entries<PingResponse[]>(data)) {
+      if (value.length === 1) {
+        continue
+      }
       const rttList = value.filter((x) => x.reply !== undefined).map((x)=>x.reply!.rtt!)
       const ip = value.filter((x) => x.lookup !== undefined).at(0)?.lookup!.ip!
       r.push({
