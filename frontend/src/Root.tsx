@@ -4,8 +4,16 @@ import {Layout, Menu, theme} from 'antd';
 import "./Root.css"
 const { Header, Content, Footer } = Layout;
 
+export interface ipGeo {
+  country: string,
+  region : string,
+  city   : string,
+  asn    : number,
+  asnname: string
+}
+
 interface ipInfo {
-  [key: string]: string;
+  [key: string]: ipGeo;
 }
 
 interface serverStruct {
@@ -34,21 +42,22 @@ export default function Root() {
     })
   });
 
-  const getIP = useCallback((ip:string) : string => {
+  const getIP = useCallback((ip:string) : ipGeo => {
+    const result = {} as ipGeo
     if (ipLocation[ip] !== undefined) {
       return ipLocation[ip]
     }
     if (inProgress.current) {
-      return ""
+      return result
     }
     inProgress.current = true
-    fetch(`/api/ip?t=${ip}`).then(r => r.text()).then(r => {
+    fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
       const newIpLocation = {...ipLocation}
       newIpLocation[ip] = r
       setIpLocation(newIpLocation)
       inProgress.current = false
     })
-    return ""
+    return result
   }, [ipLocation, inProgress])
 
   const {

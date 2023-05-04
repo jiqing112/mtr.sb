@@ -41,6 +41,14 @@ type Server struct {
 	Conn     proto.MtrSbWorkerClient `json:"-"`
 }
 
+type IPGeo struct {
+	Country string
+	Region  string
+	City    string
+	ASN     int
+	ASNName string
+}
+
 var (
 	serverList map[string]*Server
 	json       = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -69,7 +77,15 @@ func ipHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.String(http.StatusOK, "%s, %s, %s [AS%d]", results.City, results.Region, results.Country_long, bgptools.Ip2Asn(ip))
+	asn := bgptools.Ip2Asn(ip)
+	b, _ := json.Marshal(IPGeo{
+		Country: results.Country_long,
+		Region:  results.Region,
+		City:    results.City,
+		ASN:     asn,
+		ASNName: bgptools.Asn2Name(asn),
+	})
+	c.String(http.StatusOK, "%s", b)
 }
 
 func versionHandler(c *gin.Context) {
@@ -309,6 +325,7 @@ func main() {
 
 	// init bgp.tools table.txt
 	bgptools.InitNetwork(Version)
+	bgptools.AsnNameInitNetwork(Version)
 
 	// ip2location
 	ipDB, err = ip2location.OpenDB(viper.GetString("ip2location_db_path"))

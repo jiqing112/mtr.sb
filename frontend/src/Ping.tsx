@@ -3,7 +3,7 @@ import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PingResponse} from "../../proto/mtrsb";
 import {useOutletContext} from "react-router-dom";
-import {serverMap} from "./Root";
+import {ipGeo, serverMap} from "./Root";
 import ReactCountryFlag from "react-country-flag";
 import {LinkOutlined} from "@ant-design/icons";
 
@@ -20,7 +20,7 @@ interface PingTable {
   provider: string;
   aff: string;
   ip: string;
-  ip_geo: string;
+  ip_geo: ipGeo;
   loss: number;
   sent: number;
   last: number;
@@ -75,7 +75,9 @@ const columns: ColumnsType<PingTable> = [
       <>
         {ip} <small style={{
           color: "gray"
-        }}>{ip_geo}</small>
+        }}>{ip_geo.city}, {ip_geo.region}, {ip_geo.country}
+        [<a href={`https://bgp.tools/asn/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asnname}>AS{ip_geo.asn}</a>]
+      </small>
       </>
     ),
   },
@@ -137,7 +139,7 @@ export default function Ping() {
   const [protocol, setProtocol] = useState("");
   const [rd, setRd] = useState(1);
   const [start, setStart] = useState(false);
-  const [getIP, serverList] = useOutletContext() as [(ip: string) => string, serverMap];
+  const [getIP, serverList] = useOutletContext() as [(ip: string) => ipGeo, serverMap];
 
   useEffect(() => {
     if (!start || target === "") {
