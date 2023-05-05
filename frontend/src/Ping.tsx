@@ -70,17 +70,20 @@ const columns: ColumnsType<PingTable> = [
     title: 'IP',
     dataIndex: 'ip',
     className: 'ant-table-cell-ellipsis',
-    width: 500,
-    render: (_, { ip, ip_geo }) => (
-      <>
-        {ip} <small style={{color: "gray"}}>
-        {ip_geo.city}, {ip_geo.region}, {ip_geo.country} [
-        <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>
-          AS{ip_geo.asn}
-        </a>]
-      </small>
-      </>
-    ),
+    render: (_, { ip, ip_geo }) => {
+      if (ip_geo.country === undefined) {
+        return <>{ip}</>
+      } else {
+        return <>
+          {ip} <small style={{color: "gray"}}>
+          {ip_geo.city}, {ip_geo.region}, {ip_geo.country} [
+          <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>
+            AS{ip_geo.asn}
+          </a>]
+        </small>
+        </>
+      }
+    },
   },
   {
     title: 'Loss',
@@ -238,6 +241,6 @@ export default function Ping() {
         </Col>
       </Row>
     </Form>
-    <Table columns={columns} dataSource={tableData()} scroll={{ x: 1300 }} sticky size="small" pagination={false} />
+    <Table columns={columns} dataSource={tableData()} scroll={{ x: 'max-content' }} sticky size="small" pagination={false} />
   </>
 }
