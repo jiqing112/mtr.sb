@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PingResponse} from "../../proto/mtrsb";
-import {useOutletContext} from "react-router-dom";
+import {useOutletContext, useSearchParams} from "react-router-dom";
 import {ipGeo, serverMap} from "./Root";
 import ReactCountryFlag from "react-country-flag";
 import {LinkOutlined} from "@ant-design/icons";
@@ -137,11 +137,12 @@ function dev(arr: number[]) : number {
 }
 
 export default function Ping() {
+  let [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [data, setData] = useState({} as DataStruct);
-  const [target, setTarget] = useState("");
-  const [protocol, setProtocol] = useState("");
-  const [rd, setRd] = useState(1);
+  const [target, setTarget] = useState(searchParams.get("t"));
+  const [protocol, setProtocol] = useState(searchParams.get("p") === null ? "0" : searchParams.get("p"));
+  const [rd, setRd] = useState(searchParams.get("rd") === null ? "1" : searchParams.get("rd"));
   const [start, setStart] = useState(false);
   const [getIP, serverList] = useOutletContext() as [(ip: string) => ipGeo, serverMap];
 
@@ -206,12 +207,12 @@ export default function Ping() {
     <Form form={form}>
       <Row gutter={16}>
         <Col xs={24} sm={16} lg={6}>
-          <Form.Item label="Target" name="Target">
+          <Form.Item label="Target" name="Target" initialValue={target}>
             <Input placeholder="" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={8} lg={6}>
-          <Form.Item label="Protocol" name="Protocol" initialValue="0">
+          <Form.Item label="Protocol" name="Protocol" initialValue={protocol}>
             <Select>
               <Option value="0">Auto</Option>
               <Option value="1">IPv4</Option>
@@ -221,16 +222,24 @@ export default function Ping() {
         </Col>
         <Col xs={24} sm={8} lg={6}>
           <Form.Item name="RD">
-            <Checkbox defaultChecked={true}>Remote DNS</Checkbox>
+            <Checkbox defaultChecked={rd === "1"}>Remote DNS</Checkbox>
           </Form.Item>
         </Col>
         <Col xs={12} sm={8} lg={3}>
           <Form.Item>
             <Button type="primary" onClick={() => {
-              setTarget(form.getFieldValue("Target"))
-              setProtocol(form.getFieldValue("Protocol"))
-              setRd(form.getFieldInstance("RD").input.checked ? 1 : 0)
+              const _t = form.getFieldValue("Target")
+              const _p = form.getFieldValue("Protocol")
+              const _rd = form.getFieldInstance("RD").input.checked ? "1" : "0"
+              setTarget(_t)
+              setProtocol(_p)
+              setRd(_rd)
               setStart(true)
+              setSearchParams({
+                t: _t,
+                p: _p,
+                rd: _rd,
+              });
             }} disabled={start}>Start</Button>
           </Form.Item>
         </Col>
