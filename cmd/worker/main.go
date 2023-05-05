@@ -41,6 +41,7 @@ func main() {
 		Certificates: []tls.Certificate{cert},
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 		ClientCAs:    certPool,
+		MinVersion:   tls.VersionTLS13,
 	})
 	s := grpc.NewServer(grpc.Creds(c))
 	proto.RegisterMtrSbWorkerServer(s, &server{})
