@@ -132,19 +132,19 @@ export default function Traceroute() {
     <h1>Traceroute</h1>
     <Form form={form}>
       <Row gutter={16}>
-        <Col xs={24} sm={16} lg={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Form.Item label="Node" name="Node" initialValue={node}>
             <Select>
               {nodeSelector()}
             </Select>
           </Form.Item>
         </Col>
-        <Col xs={24} sm={16} lg={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Form.Item label="Target" name="Target" initialValue={target}>
             <Input placeholder="" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={8} lg={6}>
+        <Col xs={6} sm={10} lg={5}>
           <Form.Item label="Protocol" name="Protocol" initialValue={protocol}>
             <Select>
               <Option value="0">Auto</Option>
@@ -153,12 +153,12 @@ export default function Traceroute() {
             </Select>
           </Form.Item>
         </Col>
-        <Col xs={24} sm={8} lg={6}>
+        <Col xs={6} sm={6} lg={3}>
           <Form.Item name="RD">
             <Checkbox defaultChecked={rd === "1"}>Remote DNS</Checkbox>
           </Form.Item>
         </Col>
-        <Col xs={12} sm={8} lg={3}>
+        <Col xs={6} sm={4} lg={2}>
           <Form.Item>
             <Button type="primary" onClick={() => {
               setResolvedIP("N/A")
@@ -181,7 +181,7 @@ export default function Traceroute() {
             }} disabled={start}>Start</Button>
           </Form.Item>
         </Col>
-        <Col xs={12} sm={8} lg={3}>
+        <Col xs={6} sm={4} lg={2}>
           <Form.Item>
             <Button danger type="primary" onClick={() => setStart(false)} disabled={!start}>Stop</Button>
           </Form.Item>
