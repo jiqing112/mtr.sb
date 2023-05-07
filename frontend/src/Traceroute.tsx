@@ -161,6 +161,8 @@ export default function Traceroute() {
         <Col xs={12} sm={8} lg={3}>
           <Form.Item>
             <Button type="primary" onClick={() => {
+              setResolvedIP("N/A")
+
               const _n = form.getFieldValue("Node")
               const _t = form.getFieldValue("Target")
               const _p = form.getFieldValue("Protocol")
