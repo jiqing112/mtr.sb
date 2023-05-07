@@ -1,0 +1,192 @@
+import React, {useEffect, useState} from "react";
+import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
+import {ColumnsType} from "antd/es/table";
+import {useOutletContext, useSearchParams} from "react-router-dom";
+import {ipGeo, serverMap, serverStruct} from "./Root";
+import ReactCountryFlag from "react-country-flag";
+
+const { Option } = Select;
+
+interface TracerouteTable {
+  key: React.Key;
+  seq: number;
+  ip: string;
+  ip_geo: ipGeo;
+  rtt: number;
+}
+
+const columns: ColumnsType<TracerouteTable> = [
+  {
+    title: 'Seq',
+    dataIndex: 'seq',
+  },
+  {
+    title: 'IP',
+    dataIndex: 'ip',
+    className: 'ant-table-cell-ellipsis',
+    render: (_, { ip, ip_geo }) => {
+      if (ip_geo.country === undefined) {
+        return <>{ip}</>
+      } else {
+        return <>
+          {ip} <small style={{color: "gray"}}>
+          {ip_geo.city}, {ip_geo.region}, {ip_geo.country} [
+          <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>
+            AS{ip_geo.asn}
+          </a>]
+        </small>
+        </>
+      }
+    },
+  },
+  {
+    title: 'Rtt',
+    dataIndex: 'rtt',
+  },
+];
+
+export default function Traceroute() {
+  let [searchParams, setSearchParams] = useSearchParams();
+  const [form] = Form.useForm();
+  const [data, setData] = useState([] as TracerouteTable[]);
+  const [node, setNode] = useState(searchParams.get("n"));
+  const [target, setTarget] = useState(searchParams.get("t"));
+  const [protocol, setProtocol] = useState(searchParams.get("p") === null ? "0" : searchParams.get("p"));
+  const [rd, setRd] = useState(searchParams.get("rd") === null ? "1" : searchParams.get("rd"));
+  const [start, setStart] = useState(false);
+  const [getIP, serverList] = useOutletContext() as [(ip: string) => ipGeo, serverMap];
+  const [resolvedIP, setResolvedIP] = useState("N/A");
+
+  useEffect(() => {
+    if (!start || target === "") {
+      return
+    }
+    setData([])
+    const sse = new EventSource(`/api/traceroute?n=${node}&t=${target}&p=${protocol}&rd=${rd}`);
+    sse.onmessage = (ev) => {
+      let parsed = JSON.parse(ev.data)
+
+      if (parsed.lookup !== undefined) {
+        setResolvedIP(parsed.lookup.ip)
+        return
+      }
+
+      if (parsed.reply !== undefined) {
+        const t = {
+          seq: parsed.reply.seq,
+          ip : parsed.reply.ip,
+          rtt : parsed.reply.rtt,
+        } as TracerouteTable
+        setData((prev) => {
+          const newData = [...prev]
+          newData.push(t)
+          return newData
+        })
+        return
+      }
+
+      if (parsed.timeout !== undefined) {
+        const t = {
+          seq: parsed.timeout.seq,
+          ip : "*"
+        } as TracerouteTable
+        setData((prev) => {
+          const newData = [...prev]
+          newData.push(t)
+          return newData
+        })
+        return
+      }
+    };
+    sse.onerror = () => {
+      setStart(false)
+    }
+    return () => {
+      sse.close()
+      setStart(false)
+    }
+  }, [node, start, target, protocol, rd]);
+
+  const tableData = () => {
+    const r: TracerouteTable[] = []
+    data.forEach((x) => {
+      x.ip_geo = getIP(x.ip)
+      r.push(x)
+    })
+    return r
+  }
+
+  const nodeSelector = () => {
+    const r = []
+    for (const [key, value] of Object.entries<serverStruct>(serverList)) {
+      r.push(<Option value={key}><ReactCountryFlag countryCode={value.country} svg style={{
+        width: '21px',
+        height: '15px',
+        marginRight: '5px',
+      }}/>{value.location} ({value.provider})</Option>)
+    }
+    return r
+  }
+
+  return <>
+    <h1>Traceroute</h1>
+    <Form form={form}>
+      <Row gutter={16}>
+        <Col xs={24} sm={16} lg={6}>
+          <Form.Item label="Node" name="Node" initialValue={node}>
+            <Select>
+              {nodeSelector()}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={16} lg={6}>
+          <Form.Item label="Target" name="Target" initialValue={target}>
+            <Input placeholder="" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={8} lg={6}>
+          <Form.Item label="Protocol" name="Protocol" initialValue={protocol}>
+            <Select>
+              <Option value="0">Auto</Option>
+              <Option value="1">IPv4</Option>
+              <Option value="2">IPv6</Option>
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={8} lg={6}>
+          <Form.Item name="RD">
+            <Checkbox defaultChecked={rd === "1"}>Remote DNS</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col xs={12} sm={8} lg={3}>
+          <Form.Item>
+            <Button type="primary" onClick={() => {
+              const _n = form.getFieldValue("Node")
+              const _t = form.getFieldValue("Target")
+              const _p = form.getFieldValue("Protocol")
+              const _rd = form.getFieldInstance("RD").input.checked ? "1" : "0"
+              setNode(_n)
+              setTarget(_t)
+              setProtocol(_p)
+              setRd(_rd)
+              setStart(true)
+              setSearchParams({
+                n: _n,
+                t: _t,
+                p: _p,
+                rd: _rd,
+              });
+            }} disabled={start}>Start</Button>
+          </Form.Item>
+        </Col>
+        <Col xs={12} sm={8} lg={3}>
+          <Form.Item>
+            <Button danger type="primary" onClick={() => setStart(false)} disabled={!start}>Stop</Button>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
+    <span>Resolved IP: {resolvedIP}</span>
+    <Table columns={columns} dataSource={tableData()} scroll={{ x: 'max-content' }} sticky size="small" pagination={false} />
+  </>
+}

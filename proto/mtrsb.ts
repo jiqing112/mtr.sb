@@ -2,6 +2,7 @@
 import * as _m0 from "protobufjs/minimal";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { Empty } from "../google/protobuf/empty";
 
 export const protobufPackage = "";
 
@@ -87,6 +88,25 @@ export interface VersionRequest {
 
 export interface VersionResponse {
   version: string;
+}
+
+export interface TracerouteRequest {
+  host: string;
+  protocol: Protocol;
+}
+
+export interface TracerouteResponse {
+  reply?: TracerouteReply | undefined;
+  timeout?: PingTimeout | undefined;
+  error?: Error | undefined;
+  completed?: Empty | undefined;
+  lookup?: HostLookupResult | undefined;
+}
+
+export interface TracerouteReply {
+  seq: number;
+  ip: string;
+  rtt: number;
 }
 
 function createBasePingRequest(): PingRequest {
@@ -729,9 +749,284 @@ export const VersionResponse = {
   },
 };
 
+function createBaseTracerouteRequest(): TracerouteRequest {
+  return { host: "", protocol: 0 };
+}
+
+export const TracerouteRequest = {
+  encode(message: TracerouteRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.host !== "") {
+      writer.uint32(10).string(message.host);
+    }
+    if (message.protocol !== 0) {
+      writer.uint32(16).int32(message.protocol);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TracerouteRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTracerouteRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.host = reader.string();
+          continue;
+        case 2:
+          if (tag != 16) {
+            break;
+          }
+
+          message.protocol = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TracerouteRequest {
+    return {
+      host: isSet(object.host) ? String(object.host) : "",
+      protocol: isSet(object.protocol) ? protocolFromJSON(object.protocol) : 0,
+    };
+  },
+
+  toJSON(message: TracerouteRequest): unknown {
+    const obj: any = {};
+    message.host !== undefined && (obj.host = message.host);
+    message.protocol !== undefined && (obj.protocol = protocolToJSON(message.protocol));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TracerouteRequest>, I>>(base?: I): TracerouteRequest {
+    return TracerouteRequest.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<TracerouteRequest>, I>>(object: I): TracerouteRequest {
+    const message = createBaseTracerouteRequest();
+    message.host = object.host ?? "";
+    message.protocol = object.protocol ?? 0;
+    return message;
+  },
+};
+
+function createBaseTracerouteResponse(): TracerouteResponse {
+  return { reply: undefined, timeout: undefined, error: undefined, completed: undefined, lookup: undefined };
+}
+
+export const TracerouteResponse = {
+  encode(message: TracerouteResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.reply !== undefined) {
+      TracerouteReply.encode(message.reply, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.timeout !== undefined) {
+      PingTimeout.encode(message.timeout, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.error !== undefined) {
+      Error.encode(message.error, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.completed !== undefined) {
+      Empty.encode(message.completed, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.lookup !== undefined) {
+      HostLookupResult.encode(message.lookup, writer.uint32(42).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TracerouteResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTracerouteResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.reply = TracerouteReply.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag != 18) {
+            break;
+          }
+
+          message.timeout = PingTimeout.decode(reader, reader.uint32());
+          continue;
+        case 3:
+          if (tag != 26) {
+            break;
+          }
+
+          message.error = Error.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag != 34) {
+            break;
+          }
+
+          message.completed = Empty.decode(reader, reader.uint32());
+          continue;
+        case 5:
+          if (tag != 42) {
+            break;
+          }
+
+          message.lookup = HostLookupResult.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TracerouteResponse {
+    return {
+      reply: isSet(object.reply) ? TracerouteReply.fromJSON(object.reply) : undefined,
+      timeout: isSet(object.timeout) ? PingTimeout.fromJSON(object.timeout) : undefined,
+      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+      completed: isSet(object.completed) ? Empty.fromJSON(object.completed) : undefined,
+      lookup: isSet(object.lookup) ? HostLookupResult.fromJSON(object.lookup) : undefined,
+    };
+  },
+
+  toJSON(message: TracerouteResponse): unknown {
+    const obj: any = {};
+    message.reply !== undefined && (obj.reply = message.reply ? TracerouteReply.toJSON(message.reply) : undefined);
+    message.timeout !== undefined && (obj.timeout = message.timeout ? PingTimeout.toJSON(message.timeout) : undefined);
+    message.error !== undefined && (obj.error = message.error ? Error.toJSON(message.error) : undefined);
+    message.completed !== undefined &&
+      (obj.completed = message.completed ? Empty.toJSON(message.completed) : undefined);
+    message.lookup !== undefined && (obj.lookup = message.lookup ? HostLookupResult.toJSON(message.lookup) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TracerouteResponse>, I>>(base?: I): TracerouteResponse {
+    return TracerouteResponse.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<TracerouteResponse>, I>>(object: I): TracerouteResponse {
+    const message = createBaseTracerouteResponse();
+    message.reply = (object.reply !== undefined && object.reply !== null)
+      ? TracerouteReply.fromPartial(object.reply)
+      : undefined;
+    message.timeout = (object.timeout !== undefined && object.timeout !== null)
+      ? PingTimeout.fromPartial(object.timeout)
+      : undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.completed = (object.completed !== undefined && object.completed !== null)
+      ? Empty.fromPartial(object.completed)
+      : undefined;
+    message.lookup = (object.lookup !== undefined && object.lookup !== null)
+      ? HostLookupResult.fromPartial(object.lookup)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTracerouteReply(): TracerouteReply {
+  return { seq: 0, ip: "", rtt: 0 };
+}
+
+export const TracerouteReply = {
+  encode(message: TracerouteReply, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.seq !== 0) {
+      writer.uint32(8).int32(message.seq);
+    }
+    if (message.ip !== "") {
+      writer.uint32(18).string(message.ip);
+    }
+    if (message.rtt !== 0) {
+      writer.uint32(29).float(message.rtt);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TracerouteReply {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTracerouteReply();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 8) {
+            break;
+          }
+
+          message.seq = reader.int32();
+          continue;
+        case 2:
+          if (tag != 18) {
+            break;
+          }
+
+          message.ip = reader.string();
+          continue;
+        case 3:
+          if (tag != 29) {
+            break;
+          }
+
+          message.rtt = reader.float();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TracerouteReply {
+    return {
+      seq: isSet(object.seq) ? Number(object.seq) : 0,
+      ip: isSet(object.ip) ? String(object.ip) : "",
+      rtt: isSet(object.rtt) ? Number(object.rtt) : 0,
+    };
+  },
+
+  toJSON(message: TracerouteReply): unknown {
+    const obj: any = {};
+    message.seq !== undefined && (obj.seq = Math.round(message.seq));
+    message.ip !== undefined && (obj.ip = message.ip);
+    message.rtt !== undefined && (obj.rtt = message.rtt);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TracerouteReply>, I>>(base?: I): TracerouteReply {
+    return TracerouteReply.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<TracerouteReply>, I>>(object: I): TracerouteReply {
+    const message = createBaseTracerouteReply();
+    message.seq = object.seq ?? 0;
+    message.ip = object.ip ?? "";
+    message.rtt = object.rtt ?? 0;
+    return message;
+  },
+};
+
 export interface MtrSbWorker {
   Ping(request: PingRequest): Observable<PingResponse>;
   Version(request: VersionRequest): Promise<VersionResponse>;
+  Traceroute(request: TracerouteRequest): Observable<TracerouteResponse>;
 }
 
 export class MtrSbWorkerClientImpl implements MtrSbWorker {
@@ -742,6 +1037,7 @@ export class MtrSbWorkerClientImpl implements MtrSbWorker {
     this.rpc = rpc;
     this.Ping = this.Ping.bind(this);
     this.Version = this.Version.bind(this);
+    this.Traceroute = this.Traceroute.bind(this);
   }
   Ping(request: PingRequest): Observable<PingResponse> {
     const data = PingRequest.encode(request).finish();
@@ -753,6 +1049,12 @@ export class MtrSbWorkerClientImpl implements MtrSbWorker {
     const data = VersionRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "Version", data);
     return promise.then((data) => VersionResponse.decode(_m0.Reader.create(data)));
+  }
+
+  Traceroute(request: TracerouteRequest): Observable<TracerouteResponse> {
+    const data = TracerouteRequest.encode(request).finish();
+    const result = this.rpc.serverStreamingRequest(this.service, "Traceroute", data);
+    return result.pipe(map((data) => TracerouteResponse.decode(_m0.Reader.create(data))));
   }
 }
 

@@ -6,6 +6,7 @@ import Root from "./Root";
 import Ping from "./Ping";
 import Home from "./Home";
 import Version from "./Version";
+import Traceroute from "./Traceroute";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "ping",
         element: <Ping />,
+      },
+      {
+        path: "traceroute",
+        element: <Traceroute />,
       },
       {
         path: "version",

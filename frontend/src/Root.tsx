@@ -16,7 +16,7 @@ interface ipInfo {
   [key: string]: ipGeo;
 }
 
-interface serverStruct {
+export interface serverStruct {
   name    : string,
   provider: string,
   country : string,
@@ -47,13 +47,17 @@ export default function Root() {
     if (ipLocation[ip] !== undefined) {
       return ipLocation[ip]
     }
-    if (inProgress.current) {
+    if (inProgress.current || ip === "*") {
       return result
     }
     inProgress.current = true
     fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
       const newIpLocation = {...ipLocation}
-      newIpLocation[ip] = r
+      if (r.asn === 0) {
+        newIpLocation[ip] = result
+      } else {
+        newIpLocation[ip] = r
+      }
       setIpLocation(newIpLocation)
       inProgress.current = false
     })
@@ -72,6 +76,7 @@ export default function Root() {
         items={[
           {key: "index", label: <NavLink to='/'>MTR.SB</NavLink>},
           {key: "ping", label: <NavLink to='/ping'>ping</NavLink>},
+          {key: "traceroute", label: <NavLink to='/traceroute'>traceroute</NavLink>},
         ]}
       />
     </Header>

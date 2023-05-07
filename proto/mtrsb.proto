@@ -2,9 +2,12 @@ syntax = "proto3";
 
 option go_package = "proto/";
 
+import "google/protobuf/empty.proto";
+
 service MtrSbWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Version (VersionRequest) returns (VersionResponse);
+  rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
 }
 
 enum Protocol {
@@ -57,4 +60,25 @@ message VersionRequest {}
 
 message VersionResponse {
   string version = 1;
+}
+
+message TracerouteRequest {
+  string host = 1;
+  Protocol protocol = 2;
+}
+
+message TracerouteResponse {
+  oneof response {
+    TracerouteReply reply = 1;
+    PingTimeout timeout = 2;
+    Error error = 3;
+    google.protobuf.Empty completed = 4;
+    HostLookupResult lookup = 5;
+  }
+}
+
+message TracerouteReply {
+  int32 seq = 1;
+  string ip = 2;
+  float rtt = 3;
 }
