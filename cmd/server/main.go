@@ -382,12 +382,14 @@ func initServerList() {
 		log.Fatalf("tls.LoadX509KeyPair err: %v", err)
 	}
 	certPool := x509.NewCertPool()
-	ca, err := os.ReadFile(viper.GetString("worker_ca_path"))
-	if err != nil {
-		log.Fatalf("ioutil.ReadFile err: %v", err)
-	}
-	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.Fatalf("certPool.AppendCertsFromPEM err")
+	for _, caPath := range viper.GetStringSlice("worker_ca_path") {
+		ca, err := os.ReadFile(caPath)
+		if err != nil {
+			log.Fatalf("ioutil.ReadFile err: %v", err)
+		}
+		if ok := certPool.AppendCertsFromPEM(ca); !ok {
+			log.Fatalf("certPool.AppendCertsFromPEM err")
+		}
 	}
 	c := credentials.NewTLS(&tls.Config{
 		Certificates: []tls.Certificate{cert},
