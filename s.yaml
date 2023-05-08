@@ -1,0 +1,63 @@
+edition: 1.0.0
+name: mtrsb
+access: default
+
+vars:
+  service:
+    name: "mtrsb"
+    description: "A Network Diagnostic Tool"
+    internetAccess: true
+  function:
+    name: "worker"
+    description: "Edge Worker For MTR.SB"
+    codeUri: "./dist"
+    runtime: custom.debian10
+    memorySize: 128
+    timeout: 30
+    caPort: 50051
+    instanceConcurrency: 10
+    customRuntimeConfig:
+      command:
+        - /code/aliyun
+  triggers:
+    - name: httpTrigger
+      type: http
+      config:
+        authType: anonymous
+        methods:
+          - POST
+
+services:
+  hangzhou:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-hangzhou"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  shenzhen:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-shenzhen"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  mumbai:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "ap-south-1"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
