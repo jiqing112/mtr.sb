@@ -24,23 +24,30 @@ const columns: ColumnsType<TracerouteTable> = [
     title: 'IP',
     dataIndex: 'ip',
     className: 'ant-table-cell-ellipsis',
-    render: (_, { ip, ip_geo }) => {
-      if (ip_geo.country === undefined) {
-        return <>{ip}</>
-      } else {
+  },
+  {
+    title: 'Location',
+    dataIndex: 'ip_geo',
+    className: 'ant-table-cell-ellipsis',
+    render: (_, { ip_geo }) => {
+      if (ip_geo.country !== undefined) {
         return <>
-          {ip} <small style={{color: "gray"}}>
           {ip_geo.city}, {ip_geo.region}, {ip_geo.country} [
           <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>
             AS{ip_geo.asn}
           </a>]
-        </small>
         </>
       }
+      return ""
     },
   },
   {
-    title: 'Rtt',
+    title: 'rDNS',
+    dataIndex: 'ip_geo',
+    render: (_, { ip_geo }) => ip_geo.rdns,
+  },
+  {
+    title: 'RTT',
     dataIndex: 'rtt',
   },
 ];

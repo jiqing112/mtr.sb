@@ -47,6 +47,7 @@ type IPGeo struct {
 	City    string
 	Asn     int
 	AsnName string
+	Rdns    string
 }
 
 var (
@@ -78,12 +79,18 @@ func ipHandler(c *gin.Context) {
 		return
 	}
 	asn := bgptools.Ip2Asn(ip)
+	r := ""
+	rdns, err := net.LookupAddr(ip)
+	if err == nil && len(rdns) > 0 {
+		r = rdns[0]
+	}
 	b, _ := json.Marshal(IPGeo{
 		Country: results.Country_long,
 		Region:  results.Region,
 		City:    results.City,
 		Asn:     asn,
 		AsnName: bgptools.Asn2Name(asn),
+		Rdns:    r,
 	})
 	c.String(http.StatusOK, "%s", b)
 }

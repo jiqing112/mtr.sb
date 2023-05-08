@@ -9,7 +9,8 @@ export interface ipGeo {
   region  : string,
   city    : string,
   asn     : number,
-  asn_name: string
+  asn_name: string,
+  rdns    : string,
 }
 
 interface ipInfo {
