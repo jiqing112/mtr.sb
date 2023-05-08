@@ -12,4 +12,4 @@ RUN chmod +x /tini
 EXPOSE 50051
 ENTRYPOINT ["/tini", "--"]
 CMD ["/app/worker"]
-COPY --from=builder /app/worker ./
+COPY --from=builder /app/dist/worker ./

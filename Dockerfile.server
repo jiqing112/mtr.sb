@@ -17,5 +17,5 @@ RUN chmod +x /tini
 EXPOSE 8085
 ENTRYPOINT ["/tini", "--"]
 CMD ["/app/server"]
-COPY --from=backend-builder /app/server ./
+COPY --from=backend-builder /app/dist/server ./
 COPY --from=frontend-builder /app/frontend/build ./build
