@@ -39,6 +39,61 @@ services:
       service: ${vars.service}
       function: ${vars.function}
       triggers: ${vars.triggers}
+  shanghai:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-shanghai"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  qingdao:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-qingdao"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  beijing:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-beijing"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  zhangjiakou:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-zhangjiakou"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  huhehaote:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-huhehaote"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
   shenzhen:
     component: fc
     actions:
@@ -47,6 +102,17 @@ services:
           path: ./
     props:
       region: "cn-shenzhen"
+      service: ${vars.service}
+      function: ${vars.function}
+      triggers: ${vars.triggers}
+  chengdu:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "cn-chengdu"
       service: ${vars.service}
       function: ${vars.function}
       triggers: ${vars.triggers}
