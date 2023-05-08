@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"bufio"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func (s *server) Traceroute(in *proto.TracerouteRequest, server proto.MtrSbWorker_TracerouteServer) error {
+func (s *Worker) Traceroute(in *proto.TracerouteRequest, server proto.MtrSbWorker_TracerouteServer) error {
 	host := in.GetHost()
 	protocol := in.GetProtocol()
 	log.Printf("Received: %v @ %d", host, protocol)

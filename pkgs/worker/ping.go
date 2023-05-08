@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"bufio"
@@ -34,7 +34,7 @@ func init() {
 	receivedRegex = regexp.MustCompile(`([0-9]+) received`)
 }
 
-func (s *server) Ping(in *proto.PingRequest, server proto.MtrSbWorker_PingServer) error {
+func (s *Worker) Ping(in *proto.PingRequest, server proto.MtrSbWorker_PingServer) error {
 	host := in.GetHost()
 	protocol := in.GetProtocol()
 	log.Printf("Received: %v @ %d", host, protocol)

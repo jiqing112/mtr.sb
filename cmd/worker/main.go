@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"git.esd.cc/imlonghao/mtr.sb/pkgs/worker"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -11,10 +12,6 @@ import (
 	"net"
 	"os"
 )
-
-type server struct {
-	proto.UnimplementedMtrSbWorkerServer
-}
 
 func main() {
 	viper.SetConfigName("worker")
@@ -44,7 +41,7 @@ func main() {
 		MinVersion:   tls.VersionTLS13,
 	})
 	s := grpc.NewServer(grpc.Creds(c))
-	proto.RegisterMtrSbWorkerServer(s, &server{})
+	proto.RegisterMtrSbWorkerServer(s, &worker.Worker{})
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
