@@ -101,7 +101,7 @@ func versionHandler(c *gin.Context) {
 	c.Writer.Header().Set("Connection", "keep-alive")
 	c.Writer.Header().Set("Transfer-Encoding", "chunked")
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*15)
 	defer cancel()
 
 	clientChan := make(chan string)
@@ -199,7 +199,7 @@ func pingHandler(c *gin.Context) {
 		target = newTarget
 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*15)
 	defer cancel()
 
 	clientChan := make(chan string)
@@ -315,7 +315,7 @@ func tracerouteHandler(c *gin.Context) {
 		target = newTarget
 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*10)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*15)
 	defer cancel()
 
 	clientChan := make(chan string)
