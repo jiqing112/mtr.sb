@@ -8,12 +8,14 @@ import (
 	"net"
 )
 
+var Version = "N/A"
+
 func main() {
 	var opts []grpc.ServerOption
 	opts = append(opts, grpc.InitialWindowSize(64))
 	opts = append(opts, grpc.InitialConnWindowSize(64))
 	s := grpc.NewServer(opts...)
-	proto.RegisterMtrSbWorkerServer(s, &worker.Worker{})
+	proto.RegisterMtrSbWorkerServer(s, &worker.Worker{V: Version})
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

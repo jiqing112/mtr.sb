@@ -13,6 +13,8 @@ import (
 	"os"
 )
 
+var Version = "N/A"
+
 func main() {
 	viper.SetConfigName("worker")
 	viper.SetConfigType("hcl")
@@ -41,7 +43,7 @@ func main() {
 		MinVersion:   tls.VersionTLS13,
 	})
 	s := grpc.NewServer(grpc.Creds(c))
-	proto.RegisterMtrSbWorkerServer(s, &worker.Worker{})
+	proto.RegisterMtrSbWorkerServer(s, &worker.Worker{V: Version})
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
