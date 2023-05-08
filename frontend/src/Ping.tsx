@@ -70,6 +70,7 @@ const columns: ColumnsType<PingTable> = [
     title: 'IP',
     dataIndex: 'ip',
     className: 'ant-table-cell-ellipsis',
+    width: 600,
     render: (_, { ip, ip_geo }) => {
       if (ip_geo.country === undefined) {
         return <>{ip}</>
