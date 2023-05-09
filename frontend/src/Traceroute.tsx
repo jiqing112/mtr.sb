@@ -80,6 +80,7 @@ export default function Traceroute() {
 
       if (parsed.reply !== undefined) {
         const t = {
+          key: parsed.reply.seq,
           seq: parsed.reply.seq,
           ip : parsed.reply.ip,
           rtt : parsed.reply.rtt,
@@ -94,6 +95,7 @@ export default function Traceroute() {
 
       if (parsed.timeout !== undefined) {
         const t = {
+          key: parsed.timeout.seq,
           seq: parsed.timeout.seq,
           ip : "*"
         } as TracerouteTable
@@ -126,7 +128,7 @@ export default function Traceroute() {
   const nodeSelector = () => {
     const r = []
     for (const [key, value] of Object.entries<serverStruct>(serverList)) {
-      r.push(<Option value={key}><ReactCountryFlag countryCode={value.country} svg style={{
+      r.push(<Option key={key} value={key}><ReactCountryFlag countryCode={value.country} svg style={{
         width: '21px',
         height: '15px',
         marginRight: '5px',
@@ -161,7 +163,7 @@ export default function Traceroute() {
           </Form.Item>
         </Col>
         <Col xs={6} sm={6} lg={3}>
-          <Form.Item name="RD">
+          <Form.Item name="RD" valuePropName="checked">
             <Checkbox defaultChecked={rd === "1"}>Remote DNS</Checkbox>
           </Form.Item>
         </Col>
