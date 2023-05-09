@@ -32,7 +32,7 @@ export interface serverMap {
 export default function Root() {
   const [ipLocation, setIpLocation] = React.useState({} as ipInfo);
   const [serverList, setServerList] = React.useState({} as serverMap);
-  const [progress, setProgress] = React.useState<{[key: string]: boolean}>({});
+  const inProgress = React.useRef(false);
 
   useEffect(() => {
     if (Object.keys(serverList).length > 0) {
@@ -48,14 +48,10 @@ export default function Root() {
     if (ipLocation[ip] !== undefined) {
       return ipLocation[ip]
     }
-    if (progress[ip] || ip === "*") {
+    if (inProgress.current || ip === "*") {
       return result
     }
-    setProgress((prev) => {
-      const newProgress = {...prev}
-      newProgress[ip] = true
-      return newProgress
-    })
+    inProgress.current = true
     fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
       const newIpLocation = {...ipLocation}
       if (r.asn === 0) {
@@ -64,14 +60,10 @@ export default function Root() {
         newIpLocation[ip] = r
       }
       setIpLocation(newIpLocation)
-      setProgress((prev) => {
-        const newProgress = {...prev}
-        delete newProgress[ip]
-        return newProgress
-      })
+      inProgress.current = false
     })
     return result
-  }, [ipLocation, progress])
+  }, [ipLocation, inProgress])
 
   const {
     token: { colorBgContainer },
