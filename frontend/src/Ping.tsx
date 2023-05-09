@@ -222,7 +222,7 @@ export default function Ping() {
           </Form.Item>
         </Col>
         <Col xs={24} sm={8} lg={6}>
-          <Form.Item name="RD">
+          <Form.Item name="RD" valuePropName="checked">
             <Checkbox defaultChecked={rd === "1"}>Remote DNS</Checkbox>
           </Form.Item>
         </Col>
