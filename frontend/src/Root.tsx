@@ -55,7 +55,7 @@ export default function Root() {
     fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
       setIpLocation((prev) => {
         const newIpLocation = {...prev}
-        if (r.country === "") {
+        if (r.country === "-") {
           newIpLocation[ip] = result
         } else {
           newIpLocation[ip] = r
