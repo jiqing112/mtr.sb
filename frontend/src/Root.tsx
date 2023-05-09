@@ -53,17 +53,18 @@ export default function Root() {
     }
     inProgress.current[ip] = true
     fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
-      const newIpLocation = {...ipLocation}
-      if (r.asn === 0) {
-        newIpLocation[ip] = result
-      } else {
-        newIpLocation[ip] = r
-      }
-      setIpLocation(newIpLocation)
-      inProgress.current[ip] = false
+      setIpLocation((prev) => {
+        const newIpLocation = {...prev}
+        if (r.country === "") {
+          newIpLocation[ip] = result
+        } else {
+          newIpLocation[ip] = r
+        }
+        return newIpLocation
+      })
     })
     return result
-  }, [ipLocation, inProgress])
+  }, [ipLocation])
 
   const {
     token: { colorBgContainer },
