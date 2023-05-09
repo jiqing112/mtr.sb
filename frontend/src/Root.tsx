@@ -32,7 +32,7 @@ export interface serverMap {
 export default function Root() {
   const [ipLocation, setIpLocation] = React.useState({} as ipInfo);
   const [serverList, setServerList] = React.useState({} as serverMap);
-  const inProgress = React.useRef(false);
+  const inProgress = React.useRef<{[key: string]: boolean}>({});
 
   useEffect(() => {
     if (Object.keys(serverList).length > 0) {
@@ -48,10 +48,10 @@ export default function Root() {
     if (ipLocation[ip] !== undefined) {
       return ipLocation[ip]
     }
-    if (inProgress.current || ip === "*") {
+    if (inProgress.current[ip] || ip === "*") {
       return result
     }
-    inProgress.current = true
+    inProgress.current[ip] = true
     fetch(`/api/ip?t=${ip}`).then(r => r.json()).then(r => {
       const newIpLocation = {...ipLocation}
       if (r.asn === 0) {
@@ -60,7 +60,7 @@ export default function Root() {
         newIpLocation[ip] = r
       }
       setIpLocation(newIpLocation)
-      inProgress.current = false
+      inProgress.current[ip] = false
     })
     return result
   }, [ipLocation, inProgress])
