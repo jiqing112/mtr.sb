@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {PingResponse} from "../../proto/mtrsb";
@@ -28,6 +28,7 @@ interface PingTable {
   best: number;
   worst: number;
   stdev: number;
+  rttList: number[];
 }
 
 const columns: ColumnsType<PingTable> = [
@@ -35,6 +36,7 @@ const columns: ColumnsType<PingTable> = [
     title: 'Location',
     dataIndex: 'location',
     width: 150,
+    fixed: 'left',
     render: (_, { country, location }) => (
       <>
         <ReactCountryFlag title={country} countryCode={country} svg style={{
@@ -129,6 +131,29 @@ const columns: ColumnsType<PingTable> = [
     width: 100,
     sorter: (a, b) => a.stdev - b.stdev,
   },
+  {
+    title: 'Graph',
+    dataIndex: 'graph',
+    width: 100,
+    render: (_, { rttList }) => {
+      const lines = [] as ReactNode[]
+      const max = Math.max.apply(null, rttList)
+      let idx = -0.5
+      rttList.forEach((x) => {
+        idx += 1
+        if (x === -1) {
+          lines.push(<line x1={idx} y1="10" x2={idx} y2="0" style={{stroke:"#f56666"}} />)
+          return
+        }
+        lines.push(<line x1={idx} y1="10" x2={idx} y2={10-x/max*10} style={{stroke:"#48bb77"}} />)
+      })
+      return <>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" height="20">
+          {lines}
+        </svg>
+      </>
+    },
+  },
 ];
 
 function dev(arr: number[]) : number {
@@ -183,6 +208,17 @@ export default function Ping() {
       }
       const rttList = value.filter((x) => x.reply !== undefined).map((x)=>x.reply!.rtt!)
       const ip = value.filter((x) => x.lookup !== undefined).at(0)?.lookup!.ip!
+      const graph = [] as number[]
+      value.forEach((x) => {
+        if (x.reply !== undefined) {
+          graph.push(x.reply.rtt)
+          return
+        }
+        if (x.timeout !== undefined) {
+          graph.push(-1)
+          return;
+        }
+      })
       r.push({
         key: key+value.length,
         country: serverList[key].country,
@@ -198,6 +234,7 @@ export default function Ping() {
         best: Math.min.apply(null, rttList),
         worst: Math.max.apply(null, rttList),
         stdev: parseFloat(dev(rttList).toFixed(2)),
+        rttList: graph,
       })
     }
     return r
