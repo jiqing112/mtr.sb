@@ -229,7 +229,7 @@ export default function Ping() {
         <Col xs={12} sm={8} lg={3}>
           <Form.Item>
             <Button type="primary" onClick={() => {
-              const _t = form.getFieldValue("Target")
+              const _t = form.getFieldValue("Target").trim()
               const _p = form.getFieldValue("Protocol")
               const _rd = form.getFieldInstance("RD").input.checked ? "1" : "0"
               setTarget(_t)

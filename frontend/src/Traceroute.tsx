@@ -173,7 +173,7 @@ export default function Traceroute() {
               setResolvedIP("N/A")
 
               const _n = form.getFieldValue("Node")
-              const _t = form.getFieldValue("Target")
+              const _t = form.getFieldValue("Target").trim()
               const _p = form.getFieldValue("Protocol")
               const _rd = form.getFieldInstance("RD").input.checked ? "1" : "0"
               setNode(_n)
