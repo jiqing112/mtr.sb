@@ -6,11 +6,16 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
 var Version = "N/A"
 
 func main() {
+	path := os.Getenv("PATH")
+	path = path + ":/opt/bin"
+	os.Setenv("PATH", path)
+	
 	var opts []grpc.ServerOption
 	opts = append(opts, grpc.InitialWindowSize(64))
 	opts = append(opts, grpc.InitialConnWindowSize(64))
