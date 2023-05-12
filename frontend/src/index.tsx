@@ -7,6 +7,7 @@ import Ping from "./Ping";
 import Home from "./Home";
 import Version from "./Version";
 import Traceroute from "./Traceroute";
+import Mtr from "./Mtr";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "traceroute",
         element: <Traceroute />,
+      },
+      {
+        path: "mtr",
+        element: <Mtr />,
       },
       {
         path: "version",

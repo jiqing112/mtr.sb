@@ -109,6 +109,38 @@ export interface TracerouteReply {
   rtt: number;
 }
 
+export interface MtrRequest {
+  host: string;
+  protocol: Protocol;
+}
+
+export interface MtrResponse {
+  pos: number;
+  lookup?: HostLookupResult | undefined;
+  host?: MtrHostLine | undefined;
+  transmit?: MtrTransmitLine | undefined;
+  ping?: MtrPingLine | undefined;
+  dns?: MtrDnsLine | undefined;
+  error?: Error | undefined;
+}
+
+export interface MtrHostLine {
+  ip: string;
+}
+
+export interface MtrTransmitLine {
+  seqnum: number;
+}
+
+export interface MtrPingLine {
+  rtt: number;
+  seqnum: number;
+}
+
+export interface MtrDnsLine {
+  hostname: string;
+}
+
 function createBasePingRequest(): PingRequest {
   return { host: "", protocol: 0 };
 }
@@ -1023,10 +1055,474 @@ export const TracerouteReply = {
   },
 };
 
+function createBaseMtrRequest(): MtrRequest {
+  return { host: "", protocol: 0 };
+}
+
+export const MtrRequest = {
+  encode(message: MtrRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.host !== "") {
+      writer.uint32(10).string(message.host);
+    }
+    if (message.protocol !== 0) {
+      writer.uint32(16).int32(message.protocol);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.host = reader.string();
+          continue;
+        case 2:
+          if (tag != 16) {
+            break;
+          }
+
+          message.protocol = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrRequest {
+    return {
+      host: isSet(object.host) ? String(object.host) : "",
+      protocol: isSet(object.protocol) ? protocolFromJSON(object.protocol) : 0,
+    };
+  },
+
+  toJSON(message: MtrRequest): unknown {
+    const obj: any = {};
+    message.host !== undefined && (obj.host = message.host);
+    message.protocol !== undefined && (obj.protocol = protocolToJSON(message.protocol));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrRequest>, I>>(base?: I): MtrRequest {
+    return MtrRequest.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrRequest>, I>>(object: I): MtrRequest {
+    const message = createBaseMtrRequest();
+    message.host = object.host ?? "";
+    message.protocol = object.protocol ?? 0;
+    return message;
+  },
+};
+
+function createBaseMtrResponse(): MtrResponse {
+  return {
+    pos: 0,
+    lookup: undefined,
+    host: undefined,
+    transmit: undefined,
+    ping: undefined,
+    dns: undefined,
+    error: undefined,
+  };
+}
+
+export const MtrResponse = {
+  encode(message: MtrResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pos !== 0) {
+      writer.uint32(8).uint32(message.pos);
+    }
+    if (message.lookup !== undefined) {
+      HostLookupResult.encode(message.lookup, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.host !== undefined) {
+      MtrHostLine.encode(message.host, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.transmit !== undefined) {
+      MtrTransmitLine.encode(message.transmit, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.ping !== undefined) {
+      MtrPingLine.encode(message.ping, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.dns !== undefined) {
+      MtrDnsLine.encode(message.dns, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.error !== undefined) {
+      Error.encode(message.error, writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 8) {
+            break;
+          }
+
+          message.pos = reader.uint32();
+          continue;
+        case 2:
+          if (tag != 18) {
+            break;
+          }
+
+          message.lookup = HostLookupResult.decode(reader, reader.uint32());
+          continue;
+        case 3:
+          if (tag != 26) {
+            break;
+          }
+
+          message.host = MtrHostLine.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag != 34) {
+            break;
+          }
+
+          message.transmit = MtrTransmitLine.decode(reader, reader.uint32());
+          continue;
+        case 5:
+          if (tag != 42) {
+            break;
+          }
+
+          message.ping = MtrPingLine.decode(reader, reader.uint32());
+          continue;
+        case 6:
+          if (tag != 50) {
+            break;
+          }
+
+          message.dns = MtrDnsLine.decode(reader, reader.uint32());
+          continue;
+        case 7:
+          if (tag != 58) {
+            break;
+          }
+
+          message.error = Error.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrResponse {
+    return {
+      pos: isSet(object.pos) ? Number(object.pos) : 0,
+      lookup: isSet(object.lookup) ? HostLookupResult.fromJSON(object.lookup) : undefined,
+      host: isSet(object.host) ? MtrHostLine.fromJSON(object.host) : undefined,
+      transmit: isSet(object.transmit) ? MtrTransmitLine.fromJSON(object.transmit) : undefined,
+      ping: isSet(object.ping) ? MtrPingLine.fromJSON(object.ping) : undefined,
+      dns: isSet(object.dns) ? MtrDnsLine.fromJSON(object.dns) : undefined,
+      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+    };
+  },
+
+  toJSON(message: MtrResponse): unknown {
+    const obj: any = {};
+    message.pos !== undefined && (obj.pos = Math.round(message.pos));
+    message.lookup !== undefined && (obj.lookup = message.lookup ? HostLookupResult.toJSON(message.lookup) : undefined);
+    message.host !== undefined && (obj.host = message.host ? MtrHostLine.toJSON(message.host) : undefined);
+    message.transmit !== undefined &&
+      (obj.transmit = message.transmit ? MtrTransmitLine.toJSON(message.transmit) : undefined);
+    message.ping !== undefined && (obj.ping = message.ping ? MtrPingLine.toJSON(message.ping) : undefined);
+    message.dns !== undefined && (obj.dns = message.dns ? MtrDnsLine.toJSON(message.dns) : undefined);
+    message.error !== undefined && (obj.error = message.error ? Error.toJSON(message.error) : undefined);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrResponse>, I>>(base?: I): MtrResponse {
+    return MtrResponse.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrResponse>, I>>(object: I): MtrResponse {
+    const message = createBaseMtrResponse();
+    message.pos = object.pos ?? 0;
+    message.lookup = (object.lookup !== undefined && object.lookup !== null)
+      ? HostLookupResult.fromPartial(object.lookup)
+      : undefined;
+    message.host = (object.host !== undefined && object.host !== null)
+      ? MtrHostLine.fromPartial(object.host)
+      : undefined;
+    message.transmit = (object.transmit !== undefined && object.transmit !== null)
+      ? MtrTransmitLine.fromPartial(object.transmit)
+      : undefined;
+    message.ping = (object.ping !== undefined && object.ping !== null)
+      ? MtrPingLine.fromPartial(object.ping)
+      : undefined;
+    message.dns = (object.dns !== undefined && object.dns !== null) ? MtrDnsLine.fromPartial(object.dns) : undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    return message;
+  },
+};
+
+function createBaseMtrHostLine(): MtrHostLine {
+  return { ip: "" };
+}
+
+export const MtrHostLine = {
+  encode(message: MtrHostLine, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.ip !== "") {
+      writer.uint32(10).string(message.ip);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrHostLine {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrHostLine();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.ip = reader.string();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrHostLine {
+    return { ip: isSet(object.ip) ? String(object.ip) : "" };
+  },
+
+  toJSON(message: MtrHostLine): unknown {
+    const obj: any = {};
+    message.ip !== undefined && (obj.ip = message.ip);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrHostLine>, I>>(base?: I): MtrHostLine {
+    return MtrHostLine.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrHostLine>, I>>(object: I): MtrHostLine {
+    const message = createBaseMtrHostLine();
+    message.ip = object.ip ?? "";
+    return message;
+  },
+};
+
+function createBaseMtrTransmitLine(): MtrTransmitLine {
+  return { seqnum: 0 };
+}
+
+export const MtrTransmitLine = {
+  encode(message: MtrTransmitLine, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.seqnum !== 0) {
+      writer.uint32(8).uint32(message.seqnum);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrTransmitLine {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrTransmitLine();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 8) {
+            break;
+          }
+
+          message.seqnum = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrTransmitLine {
+    return { seqnum: isSet(object.seqnum) ? Number(object.seqnum) : 0 };
+  },
+
+  toJSON(message: MtrTransmitLine): unknown {
+    const obj: any = {};
+    message.seqnum !== undefined && (obj.seqnum = Math.round(message.seqnum));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrTransmitLine>, I>>(base?: I): MtrTransmitLine {
+    return MtrTransmitLine.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrTransmitLine>, I>>(object: I): MtrTransmitLine {
+    const message = createBaseMtrTransmitLine();
+    message.seqnum = object.seqnum ?? 0;
+    return message;
+  },
+};
+
+function createBaseMtrPingLine(): MtrPingLine {
+  return { rtt: 0, seqnum: 0 };
+}
+
+export const MtrPingLine = {
+  encode(message: MtrPingLine, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.rtt !== 0) {
+      writer.uint32(13).float(message.rtt);
+    }
+    if (message.seqnum !== 0) {
+      writer.uint32(16).uint32(message.seqnum);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrPingLine {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrPingLine();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 13) {
+            break;
+          }
+
+          message.rtt = reader.float();
+          continue;
+        case 2:
+          if (tag != 16) {
+            break;
+          }
+
+          message.seqnum = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrPingLine {
+    return {
+      rtt: isSet(object.rtt) ? Number(object.rtt) : 0,
+      seqnum: isSet(object.seqnum) ? Number(object.seqnum) : 0,
+    };
+  },
+
+  toJSON(message: MtrPingLine): unknown {
+    const obj: any = {};
+    message.rtt !== undefined && (obj.rtt = message.rtt);
+    message.seqnum !== undefined && (obj.seqnum = Math.round(message.seqnum));
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrPingLine>, I>>(base?: I): MtrPingLine {
+    return MtrPingLine.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrPingLine>, I>>(object: I): MtrPingLine {
+    const message = createBaseMtrPingLine();
+    message.rtt = object.rtt ?? 0;
+    message.seqnum = object.seqnum ?? 0;
+    return message;
+  },
+};
+
+function createBaseMtrDnsLine(): MtrDnsLine {
+  return { hostname: "" };
+}
+
+export const MtrDnsLine = {
+  encode(message: MtrDnsLine, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.hostname !== "") {
+      writer.uint32(10).string(message.hostname);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MtrDnsLine {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMtrDnsLine();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag != 10) {
+            break;
+          }
+
+          message.hostname = reader.string();
+          continue;
+      }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MtrDnsLine {
+    return { hostname: isSet(object.hostname) ? String(object.hostname) : "" };
+  },
+
+  toJSON(message: MtrDnsLine): unknown {
+    const obj: any = {};
+    message.hostname !== undefined && (obj.hostname = message.hostname);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MtrDnsLine>, I>>(base?: I): MtrDnsLine {
+    return MtrDnsLine.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MtrDnsLine>, I>>(object: I): MtrDnsLine {
+    const message = createBaseMtrDnsLine();
+    message.hostname = object.hostname ?? "";
+    return message;
+  },
+};
+
 export interface MtrSbWorker {
   Ping(request: PingRequest): Observable<PingResponse>;
   Version(request: VersionRequest): Promise<VersionResponse>;
   Traceroute(request: TracerouteRequest): Observable<TracerouteResponse>;
+  Mtr(request: MtrRequest): Observable<MtrResponse>;
 }
 
 export class MtrSbWorkerClientImpl implements MtrSbWorker {
@@ -1038,6 +1534,7 @@ export class MtrSbWorkerClientImpl implements MtrSbWorker {
     this.Ping = this.Ping.bind(this);
     this.Version = this.Version.bind(this);
     this.Traceroute = this.Traceroute.bind(this);
+    this.Mtr = this.Mtr.bind(this);
   }
   Ping(request: PingRequest): Observable<PingResponse> {
     const data = PingRequest.encode(request).finish();
@@ -1055,6 +1552,12 @@ export class MtrSbWorkerClientImpl implements MtrSbWorker {
     const data = TracerouteRequest.encode(request).finish();
     const result = this.rpc.serverStreamingRequest(this.service, "Traceroute", data);
     return result.pipe(map((data) => TracerouteResponse.decode(_m0.Reader.create(data))));
+  }
+
+  Mtr(request: MtrRequest): Observable<MtrResponse> {
+    const data = MtrRequest.encode(request).finish();
+    const result = this.rpc.serverStreamingRequest(this.service, "Mtr", data);
+    return result.pipe(map((data) => MtrResponse.decode(_m0.Reader.create(data))));
   }
 }
 

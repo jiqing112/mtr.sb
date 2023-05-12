@@ -25,6 +25,7 @@ type MtrSbWorkerClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (MtrSbWorker_PingClient, error)
 	Version(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error)
 	Traceroute(ctx context.Context, in *TracerouteRequest, opts ...grpc.CallOption) (MtrSbWorker_TracerouteClient, error)
+	Mtr(ctx context.Context, in *MtrRequest, opts ...grpc.CallOption) (MtrSbWorker_MtrClient, error)
 }
 
 type mtrSbWorkerClient struct {
@@ -108,6 +109,38 @@ func (x *mtrSbWorkerTracerouteClient) Recv() (*TracerouteResponse, error) {
 	return m, nil
 }
 
+func (c *mtrSbWorkerClient) Mtr(ctx context.Context, in *MtrRequest, opts ...grpc.CallOption) (MtrSbWorker_MtrClient, error) {
+	stream, err := c.cc.NewStream(ctx, &MtrSbWorker_ServiceDesc.Streams[2], "/MtrSbWorker/Mtr", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &mtrSbWorkerMtrClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type MtrSbWorker_MtrClient interface {
+	Recv() (*MtrResponse, error)
+	grpc.ClientStream
+}
+
+type mtrSbWorkerMtrClient struct {
+	grpc.ClientStream
+}
+
+func (x *mtrSbWorkerMtrClient) Recv() (*MtrResponse, error) {
+	m := new(MtrResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // MtrSbWorkerServer is the server API for MtrSbWorker service.
 // All implementations must embed UnimplementedMtrSbWorkerServer
 // for forward compatibility
@@ -115,6 +148,7 @@ type MtrSbWorkerServer interface {
 	Ping(*PingRequest, MtrSbWorker_PingServer) error
 	Version(context.Context, *VersionRequest) (*VersionResponse, error)
 	Traceroute(*TracerouteRequest, MtrSbWorker_TracerouteServer) error
+	Mtr(*MtrRequest, MtrSbWorker_MtrServer) error
 	mustEmbedUnimplementedMtrSbWorkerServer()
 }
 
@@ -130,6 +164,9 @@ func (UnimplementedMtrSbWorkerServer) Version(context.Context, *VersionRequest) 
 }
 func (UnimplementedMtrSbWorkerServer) Traceroute(*TracerouteRequest, MtrSbWorker_TracerouteServer) error {
 	return status.Errorf(codes.Unimplemented, "method Traceroute not implemented")
+}
+func (UnimplementedMtrSbWorkerServer) Mtr(*MtrRequest, MtrSbWorker_MtrServer) error {
+	return status.Errorf(codes.Unimplemented, "method Mtr not implemented")
 }
 func (UnimplementedMtrSbWorkerServer) mustEmbedUnimplementedMtrSbWorkerServer() {}
 
@@ -204,6 +241,27 @@ func (x *mtrSbWorkerTracerouteServer) Send(m *TracerouteResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _MtrSbWorker_Mtr_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(MtrRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MtrSbWorkerServer).Mtr(m, &mtrSbWorkerMtrServer{stream})
+}
+
+type MtrSbWorker_MtrServer interface {
+	Send(*MtrResponse) error
+	grpc.ServerStream
+}
+
+type mtrSbWorkerMtrServer struct {
+	grpc.ServerStream
+}
+
+func (x *mtrSbWorkerMtrServer) Send(m *MtrResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // MtrSbWorker_ServiceDesc is the grpc.ServiceDesc for MtrSbWorker service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -225,6 +283,11 @@ var MtrSbWorker_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "Traceroute",
 			Handler:       _MtrSbWorker_Traceroute_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Mtr",
+			Handler:       _MtrSbWorker_Mtr_Handler,
 			ServerStreams: true,
 		},
 	},

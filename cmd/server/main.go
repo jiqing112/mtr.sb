@@ -374,6 +374,122 @@ func tracerouteHandler(c *gin.Context) {
 	})
 }
 
+func mtrHandler(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Transfer-Encoding", "chunked")
+
+	node := c.Query("n")
+	target := c.Query("t")
+	protocolStr := c.Query("p")
+	remoteDNS := c.Query("rd")
+
+	var match bool
+	for key, _ := range serverList {
+		if key == node {
+			match = true
+			break
+		}
+	}
+	if !match {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("node not found"))
+		return
+	}
+
+	protocol, err := strconv.Atoi(protocolStr)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if remoteDNS == "0" {
+		newTarget := ""
+		ips, _ := net.LookupIP(target)
+		for _, ip := range ips {
+			switch proto.Protocol(protocol) {
+			case proto.Protocol_ANY:
+				newTarget = ip.String()
+				goto END
+			case proto.Protocol_IPV4:
+				if ipv4 := ip.To4(); ipv4 != nil {
+					newTarget = ip.String()
+					goto END
+				}
+			case proto.Protocol_IPV6:
+				if ipv4 := ip.To4(); ipv4 == nil {
+					newTarget = ip.String()
+					goto END
+				}
+			}
+		}
+	END:
+		if newTarget == "" {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("domain can't resolve"))
+			return
+		}
+		target = newTarget
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*20)
+	defer cancel()
+
+	clientChan := make(chan string)
+	doneChan := make(chan bool)
+
+	var wg sync.WaitGroup
+
+	for hostname, server := range serverList {
+		if hostname != node {
+			continue
+		}
+		wg.Add(1)
+		go func(connection proto.MtrSbWorkerClient) {
+			defer wg.Done()
+			r, err := connection.Mtr(ctx, &proto.MtrRequest{
+				Host:     target,
+				Protocol: proto.Protocol(protocol),
+			})
+			if err != nil {
+				log.Printf("could not greet: %v", err)
+				return
+			}
+			for {
+				response, err := r.Recv()
+				if err == io.EOF {
+					log.Printf("EOF!")
+					break
+				}
+				if err != nil {
+					log.Printf("could not greet: %v", err)
+					break
+				}
+				if response == nil {
+					continue
+				}
+				a, _ := json.Marshal(response)
+				log.Printf("%s", a)
+				clientChan <- string(a)
+			}
+		}(server.Conn)
+	}
+
+	go func() {
+		wg.Wait()
+		doneChan <- true
+	}()
+
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case msg := <-clientChan:
+			c.SSEvent("message", msg)
+			return true
+		case <-doneChan:
+			return false
+		}
+	})
+}
+
 func getParam(m map[string]interface{}, k string) string {
 	if s, ok := m[k]; ok {
 		return s.(string)
@@ -463,6 +579,7 @@ func main() {
 	api.GET("/ping", pingHandler)
 	api.GET("/traceroute", tracerouteHandler)
 	api.GET("/servers", serverListHandler)
+	api.GET("/mtr", mtrHandler)
 	api.GET("/ip", ipHandler)
 	api.GET("/version", versionHandler)
 	router.NoRoute(catchAllPath, gin.WrapH(http.FileServer(gin.Dir("build", false))))

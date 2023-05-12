@@ -79,6 +79,7 @@ export default function Root() {
           {key: "index", label: <NavLink to='/'>MTR.SB</NavLink>},
           {key: "ping", label: <NavLink to='/ping'>ping</NavLink>},
           {key: "traceroute", label: <NavLink to='/traceroute'>traceroute</NavLink>},
+          {key: "mtr", label: <NavLink to='/mtr'>mtr</NavLink>},
         ]}
       />
     </Header>

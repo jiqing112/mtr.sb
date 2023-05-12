@@ -8,6 +8,7 @@ service MtrSbWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Version (VersionRequest) returns (VersionResponse);
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
+  rpc Mtr (MtrRequest) returns (stream MtrResponse);
 }
 
 enum Protocol {
@@ -81,4 +82,38 @@ message TracerouteReply {
   int32 seq = 1;
   string ip = 2;
   float rtt = 3;
+}
+
+message MtrRequest {
+  string host = 1;
+  Protocol protocol = 2;
+}
+
+message MtrResponse {
+  uint32 pos = 1;
+  oneof response {
+    HostLookupResult lookup = 2;
+    MtrHostLine host = 3;
+    MtrTransmitLine transmit = 4;
+    MtrPingLine ping = 5;
+    MtrDnsLine dns = 6;
+    Error error = 7;
+  }
+}
+
+message MtrHostLine {
+  string ip = 1;
+}
+
+message MtrTransmitLine {
+  uint32 seqnum = 1;
+}
+
+message MtrPingLine {
+  float rtt = 1;
+  uint32 seqnum = 2;
+}
+
+message MtrDnsLine {
+  string hostname = 1;
 }

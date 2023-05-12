@@ -849,6 +849,402 @@ func (x *TracerouteReply) GetRtt() float32 {
 	return 0
 }
 
+type MtrRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Host     string   `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
+	Protocol Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=Protocol" json:"protocol,omitempty"`
+}
+
+func (x *MtrRequest) Reset() {
+	*x = MtrRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrRequest) ProtoMessage() {}
+
+func (x *MtrRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrRequest.ProtoReflect.Descriptor instead.
+func (*MtrRequest) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *MtrRequest) GetHost() string {
+	if x != nil {
+		return x.Host
+	}
+	return ""
+}
+
+func (x *MtrRequest) GetProtocol() Protocol {
+	if x != nil {
+		return x.Protocol
+	}
+	return Protocol_ANY
+}
+
+type MtrResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Pos uint32 `protobuf:"varint,1,opt,name=pos,proto3" json:"pos,omitempty"`
+	// Types that are assignable to Response:
+	//
+	//	*MtrResponse_Lookup
+	//	*MtrResponse_Host
+	//	*MtrResponse_Transmit
+	//	*MtrResponse_Ping
+	//	*MtrResponse_Dns
+	//	*MtrResponse_Error
+	Response isMtrResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *MtrResponse) Reset() {
+	*x = MtrResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrResponse) ProtoMessage() {}
+
+func (x *MtrResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrResponse.ProtoReflect.Descriptor instead.
+func (*MtrResponse) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *MtrResponse) GetPos() uint32 {
+	if x != nil {
+		return x.Pos
+	}
+	return 0
+}
+
+func (m *MtrResponse) GetResponse() isMtrResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetLookup() *HostLookupResult {
+	if x, ok := x.GetResponse().(*MtrResponse_Lookup); ok {
+		return x.Lookup
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetHost() *MtrHostLine {
+	if x, ok := x.GetResponse().(*MtrResponse_Host); ok {
+		return x.Host
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetTransmit() *MtrTransmitLine {
+	if x, ok := x.GetResponse().(*MtrResponse_Transmit); ok {
+		return x.Transmit
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetPing() *MtrPingLine {
+	if x, ok := x.GetResponse().(*MtrResponse_Ping); ok {
+		return x.Ping
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetDns() *MtrDnsLine {
+	if x, ok := x.GetResponse().(*MtrResponse_Dns); ok {
+		return x.Dns
+	}
+	return nil
+}
+
+func (x *MtrResponse) GetError() *Error {
+	if x, ok := x.GetResponse().(*MtrResponse_Error); ok {
+		return x.Error
+	}
+	return nil
+}
+
+type isMtrResponse_Response interface {
+	isMtrResponse_Response()
+}
+
+type MtrResponse_Lookup struct {
+	Lookup *HostLookupResult `protobuf:"bytes,2,opt,name=lookup,proto3,oneof"`
+}
+
+type MtrResponse_Host struct {
+	Host *MtrHostLine `protobuf:"bytes,3,opt,name=host,proto3,oneof"`
+}
+
+type MtrResponse_Transmit struct {
+	Transmit *MtrTransmitLine `protobuf:"bytes,4,opt,name=transmit,proto3,oneof"`
+}
+
+type MtrResponse_Ping struct {
+	Ping *MtrPingLine `protobuf:"bytes,5,opt,name=ping,proto3,oneof"`
+}
+
+type MtrResponse_Dns struct {
+	Dns *MtrDnsLine `protobuf:"bytes,6,opt,name=dns,proto3,oneof"`
+}
+
+type MtrResponse_Error struct {
+	Error *Error `protobuf:"bytes,7,opt,name=error,proto3,oneof"`
+}
+
+func (*MtrResponse_Lookup) isMtrResponse_Response() {}
+
+func (*MtrResponse_Host) isMtrResponse_Response() {}
+
+func (*MtrResponse_Transmit) isMtrResponse_Response() {}
+
+func (*MtrResponse_Ping) isMtrResponse_Response() {}
+
+func (*MtrResponse_Dns) isMtrResponse_Response() {}
+
+func (*MtrResponse_Error) isMtrResponse_Response() {}
+
+type MtrHostLine struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Ip string `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`
+}
+
+func (x *MtrHostLine) Reset() {
+	*x = MtrHostLine{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrHostLine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrHostLine) ProtoMessage() {}
+
+func (x *MtrHostLine) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrHostLine.ProtoReflect.Descriptor instead.
+func (*MtrHostLine) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *MtrHostLine) GetIp() string {
+	if x != nil {
+		return x.Ip
+	}
+	return ""
+}
+
+type MtrTransmitLine struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Seqnum uint32 `protobuf:"varint,1,opt,name=seqnum,proto3" json:"seqnum,omitempty"`
+}
+
+func (x *MtrTransmitLine) Reset() {
+	*x = MtrTransmitLine{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrTransmitLine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrTransmitLine) ProtoMessage() {}
+
+func (x *MtrTransmitLine) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrTransmitLine.ProtoReflect.Descriptor instead.
+func (*MtrTransmitLine) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *MtrTransmitLine) GetSeqnum() uint32 {
+	if x != nil {
+		return x.Seqnum
+	}
+	return 0
+}
+
+type MtrPingLine struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Rtt    float32 `protobuf:"fixed32,1,opt,name=rtt,proto3" json:"rtt,omitempty"`
+	Seqnum uint32  `protobuf:"varint,2,opt,name=seqnum,proto3" json:"seqnum,omitempty"`
+}
+
+func (x *MtrPingLine) Reset() {
+	*x = MtrPingLine{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrPingLine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrPingLine) ProtoMessage() {}
+
+func (x *MtrPingLine) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrPingLine.ProtoReflect.Descriptor instead.
+func (*MtrPingLine) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *MtrPingLine) GetRtt() float32 {
+	if x != nil {
+		return x.Rtt
+	}
+	return 0
+}
+
+func (x *MtrPingLine) GetSeqnum() uint32 {
+	if x != nil {
+		return x.Seqnum
+	}
+	return 0
+}
+
+type MtrDnsLine struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Hostname string `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname,omitempty"`
+}
+
+func (x *MtrDnsLine) Reset() {
+	*x = MtrDnsLine{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_mtrsb_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MtrDnsLine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MtrDnsLine) ProtoMessage() {}
+
+func (x *MtrDnsLine) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mtrsb_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MtrDnsLine.ProtoReflect.Descriptor instead.
+func (*MtrDnsLine) Descriptor() ([]byte, []int) {
+	return file_proto_mtrsb_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *MtrDnsLine) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
 var File_proto_mtrsb_proto protoreflect.FileDescriptor
 
 var file_proto_mtrsb_proto_rawDesc = []byte{
@@ -920,20 +1316,55 @@ var file_proto_mtrsb_proto_rawDesc = []byte{
 	0x12, 0x10, 0x0a, 0x03, 0x73, 0x65, 0x71, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x73,
 	0x65, 0x71, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
 	0x69, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x72, 0x74, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x02, 0x52,
-	0x03, 0x72, 0x74, 0x74, 0x2a, 0x27, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c,
-	0x12, 0x07, 0x0a, 0x03, 0x41, 0x4e, 0x59, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x50, 0x56,
-	0x34, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x50, 0x56, 0x36, 0x10, 0x02, 0x32, 0x9b, 0x01,
-	0x0a, 0x0b, 0x4d, 0x74, 0x72, 0x53, 0x62, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x25, 0x0a,
-	0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x0c, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x0d, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x30, 0x01, 0x12, 0x2c, 0x0a, 0x07, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12,
-	0x0f, 0x2e, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x10, 0x2e, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x37, 0x0a, 0x0a, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x6f, 0x75, 0x74, 0x65,
-	0x12, 0x12, 0x2e, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x6f, 0x75, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x03, 0x72, 0x74, 0x74, 0x22, 0x47, 0x0a, 0x0a, 0x4d, 0x74, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63,
+	0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x09, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x63, 0x6f, 0x6c, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x22, 0x91, 0x02,
+	0x0a, 0x0b, 0x4d, 0x74, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a,
+	0x03, 0x70, 0x6f, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x70, 0x6f, 0x73, 0x12,
+	0x2b, 0x0a, 0x06, 0x6c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x11, 0x2e, 0x48, 0x6f, 0x73, 0x74, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x48, 0x00, 0x52, 0x06, 0x6c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x12, 0x22, 0x0a, 0x04,
+	0x68, 0x6f, 0x73, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x4d, 0x74, 0x72,
+	0x48, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x6e, 0x65, 0x48, 0x00, 0x52, 0x04, 0x68, 0x6f, 0x73, 0x74,
+	0x12, 0x2e, 0x0a, 0x08, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6d, 0x69, 0x74, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x10, 0x2e, 0x4d, 0x74, 0x72, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6d, 0x69, 0x74,
+	0x4c, 0x69, 0x6e, 0x65, 0x48, 0x00, 0x52, 0x08, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x6d, 0x69, 0x74,
+	0x12, 0x22, 0x0a, 0x04, 0x70, 0x69, 0x6e, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c,
+	0x2e, 0x4d, 0x74, 0x72, 0x50, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x6e, 0x65, 0x48, 0x00, 0x52, 0x04,
+	0x70, 0x69, 0x6e, 0x67, 0x12, 0x1f, 0x0a, 0x03, 0x64, 0x6e, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0b, 0x2e, 0x4d, 0x74, 0x72, 0x44, 0x6e, 0x73, 0x4c, 0x69, 0x6e, 0x65, 0x48, 0x00,
+	0x52, 0x03, 0x64, 0x6e, 0x73, 0x12, 0x1e, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x06, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x48, 0x00, 0x52, 0x05,
+	0x65, 0x72, 0x72, 0x6f, 0x72, 0x42, 0x0a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x1d, 0x0a, 0x0b, 0x4d, 0x74, 0x72, 0x48, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x6e, 0x65,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x70,
+	0x22, 0x29, 0x0a, 0x0f, 0x4d, 0x74, 0x72, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x6d, 0x69, 0x74, 0x4c,
+	0x69, 0x6e, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x71, 0x6e, 0x75, 0x6d, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x06, 0x73, 0x65, 0x71, 0x6e, 0x75, 0x6d, 0x22, 0x37, 0x0a, 0x0b, 0x4d,
+	0x74, 0x72, 0x50, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x6e, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x72, 0x74,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x03, 0x72, 0x74, 0x74, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x65, 0x71, 0x6e, 0x75, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x06, 0x73, 0x65,
+	0x71, 0x6e, 0x75, 0x6d, 0x22, 0x28, 0x0a, 0x0a, 0x4d, 0x74, 0x72, 0x44, 0x6e, 0x73, 0x4c, 0x69,
+	0x6e, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x2a, 0x27,
+	0x0a, 0x08, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x4e,
+	0x59, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x50, 0x56, 0x34, 0x10, 0x01, 0x12, 0x08, 0x0a,
+	0x04, 0x49, 0x50, 0x56, 0x36, 0x10, 0x02, 0x32, 0xbf, 0x01, 0x0a, 0x0b, 0x4d, 0x74, 0x72, 0x53,
+	0x62, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12,
+	0x0c, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0d, 0x2e,
+	0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x2c,
+	0x0a, 0x07, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x0f, 0x2e, 0x56, 0x65, 0x72, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x10, 0x2e, 0x56, 0x65, 0x72,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x0a,
+	0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x12, 0x2e, 0x54, 0x72, 0x61,
+	0x63, 0x65, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13,
+	0x2e, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x30, 0x01, 0x12, 0x22, 0x0a, 0x03, 0x4d, 0x74, 0x72, 0x12, 0x0b, 0x2e, 0x4d,
+	0x74, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0c, 0x2e, 0x4d, 0x74, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x30, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -949,7 +1380,7 @@ func file_proto_mtrsb_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_mtrsb_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_mtrsb_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_mtrsb_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_proto_mtrsb_proto_goTypes = []interface{}{
 	(Protocol)(0),              // 0: Protocol
 	(*PingRequest)(nil),        // 1: PingRequest
@@ -964,7 +1395,13 @@ var file_proto_mtrsb_proto_goTypes = []interface{}{
 	(*TracerouteRequest)(nil),  // 10: TracerouteRequest
 	(*TracerouteResponse)(nil), // 11: TracerouteResponse
 	(*TracerouteReply)(nil),    // 12: TracerouteReply
-	(*emptypb.Empty)(nil),      // 13: google.protobuf.Empty
+	(*MtrRequest)(nil),         // 13: MtrRequest
+	(*MtrResponse)(nil),        // 14: MtrResponse
+	(*MtrHostLine)(nil),        // 15: MtrHostLine
+	(*MtrTransmitLine)(nil),    // 16: MtrTransmitLine
+	(*MtrPingLine)(nil),        // 17: MtrPingLine
+	(*MtrDnsLine)(nil),         // 18: MtrDnsLine
+	(*emptypb.Empty)(nil),      // 19: google.protobuf.Empty
 }
 var file_proto_mtrsb_proto_depIdxs = []int32{
 	0,  // 0: PingRequest.protocol:type_name -> Protocol
@@ -977,19 +1414,28 @@ var file_proto_mtrsb_proto_depIdxs = []int32{
 	12, // 7: TracerouteResponse.reply:type_name -> TracerouteReply
 	4,  // 8: TracerouteResponse.timeout:type_name -> PingTimeout
 	7,  // 9: TracerouteResponse.error:type_name -> Error
-	13, // 10: TracerouteResponse.completed:type_name -> google.protobuf.Empty
+	19, // 10: TracerouteResponse.completed:type_name -> google.protobuf.Empty
 	6,  // 11: TracerouteResponse.lookup:type_name -> HostLookupResult
-	1,  // 12: MtrSbWorker.Ping:input_type -> PingRequest
-	8,  // 13: MtrSbWorker.Version:input_type -> VersionRequest
-	10, // 14: MtrSbWorker.Traceroute:input_type -> TracerouteRequest
-	2,  // 15: MtrSbWorker.Ping:output_type -> PingResponse
-	9,  // 16: MtrSbWorker.Version:output_type -> VersionResponse
-	11, // 17: MtrSbWorker.Traceroute:output_type -> TracerouteResponse
-	15, // [15:18] is the sub-list for method output_type
-	12, // [12:15] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	0,  // 12: MtrRequest.protocol:type_name -> Protocol
+	6,  // 13: MtrResponse.lookup:type_name -> HostLookupResult
+	15, // 14: MtrResponse.host:type_name -> MtrHostLine
+	16, // 15: MtrResponse.transmit:type_name -> MtrTransmitLine
+	17, // 16: MtrResponse.ping:type_name -> MtrPingLine
+	18, // 17: MtrResponse.dns:type_name -> MtrDnsLine
+	7,  // 18: MtrResponse.error:type_name -> Error
+	1,  // 19: MtrSbWorker.Ping:input_type -> PingRequest
+	8,  // 20: MtrSbWorker.Version:input_type -> VersionRequest
+	10, // 21: MtrSbWorker.Traceroute:input_type -> TracerouteRequest
+	13, // 22: MtrSbWorker.Mtr:input_type -> MtrRequest
+	2,  // 23: MtrSbWorker.Ping:output_type -> PingResponse
+	9,  // 24: MtrSbWorker.Version:output_type -> VersionResponse
+	11, // 25: MtrSbWorker.Traceroute:output_type -> TracerouteResponse
+	14, // 26: MtrSbWorker.Mtr:output_type -> MtrResponse
+	23, // [23:27] is the sub-list for method output_type
+	19, // [19:23] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_proto_mtrsb_proto_init() }
@@ -1142,6 +1588,78 @@ func file_proto_mtrsb_proto_init() {
 				return nil
 			}
 		}
+		file_proto_mtrsb_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_mtrsb_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_mtrsb_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrHostLine); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_mtrsb_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrTransmitLine); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_mtrsb_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrPingLine); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_mtrsb_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MtrDnsLine); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_proto_mtrsb_proto_msgTypes[1].OneofWrappers = []interface{}{
 		(*PingResponse_Reply)(nil),
@@ -1157,13 +1675,21 @@ func file_proto_mtrsb_proto_init() {
 		(*TracerouteResponse_Completed)(nil),
 		(*TracerouteResponse_Lookup)(nil),
 	}
+	file_proto_mtrsb_proto_msgTypes[13].OneofWrappers = []interface{}{
+		(*MtrResponse_Lookup)(nil),
+		(*MtrResponse_Host)(nil),
+		(*MtrResponse_Transmit)(nil),
+		(*MtrResponse_Ping)(nil),
+		(*MtrResponse_Dns)(nil),
+		(*MtrResponse_Error)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_mtrsb_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
