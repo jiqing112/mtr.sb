@@ -7,18 +7,6 @@ vars:
     name: "mtrsb"
     description: "A Network Diagnostic Tool"
     internetAccess: true
-  function:
-    name: "worker"
-    description: "Edge Worker For MTR.SB"
-    codeUri: "./dist"
-    runtime: custom.debian10
-    memorySize: 128
-    timeout: 30
-    caPort: 50051
-    instanceConcurrency: 10
-    customRuntimeConfig:
-      command:
-        - /code/aliyun
   triggers:
     - name: httpTrigger
       type: http
@@ -37,7 +25,20 @@ services:
     props:
       region: "cn-hangzhou"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-hangzhou:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   shanghai:
     component: fc
@@ -48,7 +49,20 @@ services:
     props:
       region: "cn-shanghai"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-shanghai:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   qingdao:
     component: fc
@@ -59,7 +73,20 @@ services:
     props:
       region: "cn-qingdao"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-qingdao:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   beijing:
     component: fc
@@ -70,7 +97,20 @@ services:
     props:
       region: "cn-beijing"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-beijing:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   zhangjiakou:
     component: fc
@@ -81,7 +121,20 @@ services:
     props:
       region: "cn-zhangjiakou"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-zhangjiakou:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   huhehaote:
     component: fc
@@ -92,7 +145,20 @@ services:
     props:
       region: "cn-huhehaote"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-huhehaote:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   shenzhen:
     component: fc
@@ -103,7 +169,20 @@ services:
     props:
       region: "cn-shenzhen"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-shenzhen:1221242223154022:layers/mtr-tiny/versions/3
       triggers: ${vars.triggers}
   chengdu:
     component: fc
@@ -114,7 +193,20 @@ services:
     props:
       region: "cn-chengdu"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:cn-chengdu:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
   mumbai:
     component: fc
@@ -125,5 +217,18 @@ services:
     props:
       region: "ap-south-1"
       service: ${vars.service}
-      function: ${vars.function}
+      function:
+        name: "worker"
+        description: "Edge Worker For MTR.SB"
+        codeUri: "./dist"
+        runtime: custom.debian10
+        memorySize: 128
+        timeout: 30
+        caPort: 50051
+        instanceConcurrency: 10
+        customRuntimeConfig:
+          command:
+            - /code/aliyun
+        layers:
+          - acs:fc:ap-south-1:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
