@@ -29,6 +29,7 @@ interface PingTable {
   worst: number;
   stdev: number;
   rttList: number[];
+  node: string;
 }
 
 const columns: ColumnsType<PingTable> = [
@@ -73,7 +74,7 @@ const columns: ColumnsType<PingTable> = [
     dataIndex: 'ip',
     className: 'ant-table-cell-ellipsis',
     width: 600,
-    render: (_, { ip, ip_geo }) => {
+    render: (_, { ip, ip_geo, node }) => {
       if (ip_geo.country === undefined) {
         return <>{ip}</>
       } else {
@@ -83,6 +84,8 @@ const columns: ColumnsType<PingTable> = [
           <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer" title={ip_geo.asn_name}>
             AS{ip_geo.asn}
           </a>]
+          [<a href={`/traceroute?n=${node}&t=${ip}`} target="_blank" rel="noreferrer">T</a>]
+          [<a href={`/mtr?n=${node}&t=${ip}`} target="_blank" rel="noreferrer">M</a>]
         </small>
         </>
       }
@@ -235,6 +238,7 @@ export default function Ping() {
         worst: Math.max.apply(null, rttList),
         stdev: parseFloat(dev(rttList).toFixed(2)),
         rttList: graph,
+        node: key,
       })
     }
     return r
