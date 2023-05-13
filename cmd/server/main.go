@@ -588,7 +588,10 @@ func main() {
 	cfg.OutputPaths = []string{
 		"/var/log/mtr.sb/server.log",
 	}
-	z, _ = cfg.Build()
+	z, err = cfg.Build()
+	if err != nil {
+		log.Fatalf("fatal error building logger, %v", err)
+	}
 
 	// Set up a connection to the server.
 	initServerList()
