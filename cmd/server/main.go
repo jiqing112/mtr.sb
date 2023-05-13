@@ -42,12 +42,13 @@ type Server struct {
 }
 
 type IPGeo struct {
-	Country string
-	Region  string
-	City    string
-	Asn     int
-	AsnName string
-	Rdns    string
+	Country      string
+	CountryShort string
+	Region       string
+	City         string
+	Asn          int
+	AsnName      string
+	Rdns         string
 }
 
 var (
@@ -85,12 +86,13 @@ func ipHandler(c *gin.Context) {
 		r = rdns[0]
 	}
 	b, _ := json.Marshal(IPGeo{
-		Country: results.Country_long,
-		Region:  results.Region,
-		City:    results.City,
-		Asn:     asn,
-		AsnName: bgptools.Asn2Name(asn),
-		Rdns:    r,
+		Country:      results.Country_long,
+		CountryShort: results.Country_short,
+		Region:       results.Region,
+		City:         results.City,
+		Asn:          asn,
+		AsnName:      bgptools.Asn2Name(asn),
+		Rdns:         r,
 	})
 	c.String(http.StatusOK, "%s", b)
 }
