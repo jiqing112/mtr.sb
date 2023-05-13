@@ -9,7 +9,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/praserx/ipconv v1.2.1
 	github.com/spf13/viper v1.15.0
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
