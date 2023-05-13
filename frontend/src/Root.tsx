@@ -6,6 +6,7 @@ const { Header, Content, Footer } = Layout;
 
 export interface ipGeo {
   country : string,
+  country_short: string,
   region  : string,
   city    : string,
   asn     : number,

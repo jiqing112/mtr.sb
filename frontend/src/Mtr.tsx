@@ -51,6 +51,11 @@ const columns: ColumnsType<MtrTable> = [
         return <>
           {ip} <small style={{color: "gray"}}>
           {ip_geo.rdns} <br />
+          <ReactCountryFlag title={ip_geo.country_short} countryCode={ip_geo.country_short} svg style={{
+            width: '21px',
+            height: '15px',
+            marginRight: '5px',
+          }} />
           {ip_geo.city}, {ip_geo.region}, {ip_geo.country} [
           <a href={`https://bgp.tools/as/${ip_geo.asn}`} target="_blank" rel="noreferrer">
             AS{ip_geo.asn} {ip_geo.asn_name}
