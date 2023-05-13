@@ -1,4 +1,4 @@
-import {NavLink, Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import React, {useCallback, useEffect} from "react";
 import {Layout, Menu, theme} from 'antd';
 import "./Root.css"
@@ -33,6 +33,7 @@ export default function Root() {
   const [ipLocation, setIpLocation] = React.useState({} as ipInfo);
   const [serverList, setServerList] = React.useState({} as serverMap);
   const inProgress = React.useRef<{[key: string]: boolean}>({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (Object.keys(serverList).length > 0) {
@@ -76,11 +77,12 @@ export default function Root() {
         theme="dark"
         mode="horizontal"
         items={[
-          {key: "index", label: <NavLink to='/'>MTR.SB</NavLink>},
-          {key: "ping", label: <NavLink to='/ping'>ping</NavLink>},
-          {key: "traceroute", label: <NavLink to='/traceroute'>traceroute</NavLink>},
-          {key: "mtr", label: <NavLink to='/mtr'>mtr</NavLink>},
+          {key: "", label: "MTR.SB"},
+          {key: "ping", label: "ping"},
+          {key: "traceroute", label: "traceroute"},
+          {key: "mtr", label: "mtr"},
         ]}
+        onClick={(item) => navigate(`/${item.key}`)}
       />
     </Header>
     <Content>
