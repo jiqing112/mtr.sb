@@ -12,8 +12,6 @@ import (
 	"github.com/ip2location/ip2location-go/v9"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
-	"github.com/newrelic/go-agent/v3/integrations/nrzap"
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -586,12 +584,11 @@ func main() {
 	viper.WatchConfig()
 
 	// logger
-	z, _ = zap.NewProduction()
-	newrelic.NewApplication(
-		newrelic.ConfigAppName(viper.GetString("newrelic_name")),
-		newrelic.ConfigLicense(viper.GetString("newrelic_license")),
-		nrzap.ConfigLogger(z.Named("newrelic")),
-	)
+	cfg := zap.NewProductionConfig()
+	cfg.OutputPaths = []string{
+		"/var/log/mtr.sb/server.log",
+	}
+	z, _ = cfg.Build()
 
 	// Set up a connection to the server.
 	initServerList()

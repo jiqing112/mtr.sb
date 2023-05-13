@@ -7,8 +7,6 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/ip2location/ip2location-go/v9 v9.6.0
 	github.com/json-iterator/go v1.1.12
-	github.com/newrelic/go-agent/v3 v3.21.1
-	github.com/newrelic/go-agent/v3/integrations/nrzap v1.0.1
 	github.com/praserx/ipconv v1.2.1
 	github.com/spf13/viper v1.15.0
 	go.uber.org/zap v1.21.0
