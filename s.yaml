@@ -204,6 +204,72 @@ services:
         layers:
           - acs:fc:cn-chengdu:1221242223154022:layers/mtr-tiny/versions/2
       triggers: ${vars.triggers}
+  malaysia:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "ap-southeast-3"
+      service: ${vars.service}
+      function:
+        name: ${vars.function.name}
+        description: ${vars.function.description}
+        codeUri: ${vars.function.codeUri}
+        runtime: ${vars.function.runtime}
+        memorySize: ${vars.function.memorySize}
+        timeout: ${vars.function.timeout}
+        caPort: ${vars.function.caPort}
+        instanceConcurrency: ${vars.function.instanceConcurrency}
+        customRuntimeConfig: ${vars.function.customRuntimeConfig}
+        layers:
+          - acs:fc:ap-southeast-3:1221242223154022:layers/mtr-tiny/versions/1
+      triggers: ${vars.triggers}
+  indonesia:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "ap-southeast-5"
+      service: ${vars.service}
+      function:
+        name: ${vars.function.name}
+        description: ${vars.function.description}
+        codeUri: ${vars.function.codeUri}
+        runtime: ${vars.function.runtime}
+        memorySize: ${vars.function.memorySize}
+        timeout: ${vars.function.timeout}
+        caPort: ${vars.function.caPort}
+        instanceConcurrency: ${vars.function.instanceConcurrency}
+        customRuntimeConfig: ${vars.function.customRuntimeConfig}
+        layers:
+          - acs:fc:ap-southeast-5:1221242223154022:layers/mtr-tiny/versions/1
+      triggers: ${vars.triggers}
+  thailand:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: ./build.sh aliyun
+          path: ./
+    props:
+      region: "ap-southeast-7"
+      service: ${vars.service}
+      function:
+        name: ${vars.function.name}
+        description: ${vars.function.description}
+        codeUri: ${vars.function.codeUri}
+        runtime: ${vars.function.runtime}
+        memorySize: ${vars.function.memorySize}
+        timeout: ${vars.function.timeout}
+        caPort: ${vars.function.caPort}
+        instanceConcurrency: ${vars.function.instanceConcurrency}
+        customRuntimeConfig: ${vars.function.customRuntimeConfig}
+        layers:
+          - acs:fc:ap-southeast-7:1221242223154022:layers/mtr-tiny/versions/1
+      triggers: ${vars.triggers}
   mumbai:
     component: fc
     actions:
