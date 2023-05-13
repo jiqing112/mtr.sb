@@ -1,4 +1,4 @@
-import React, {ReactNode, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Checkbox, Col, Form, Input, Row, Select, Table} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {useOutletContext, useSearchParams} from "react-router-dom";
@@ -37,11 +37,13 @@ const columns: ColumnsType<MtrTable> = [
   {
     title: '#',
     dataIndex: 'seq',
+    width: 25,
   },
   {
     title: 'IP',
     dataIndex: 'ip',
     className: 'ant-table-cell-ellipsis',
+    width: 600,
     render: (_, { ip, ip_geo }) => {
       if (ip_geo.country === undefined) {
         return <>{ip}</>
