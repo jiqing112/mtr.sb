@@ -12,7 +12,10 @@ import (
 	"github.com/ip2location/ip2location-go/v9"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
+	"github.com/newrelic/go-agent/v3/integrations/nrzap"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io"
@@ -56,6 +59,7 @@ var (
 	json       = jsoniter.ConfigCompatibleWithStandardLibrary
 	ipDB       *ip2location.DB
 	Version    = "N/A"
+	z          *zap.Logger
 )
 
 func init() {
@@ -64,6 +68,8 @@ func init() {
 }
 
 func serverListHandler(c *gin.Context) {
+	z.Info("server", zap.String("ip", c.ClientIP()))
+
 	b, _ := json.Marshal(serverList)
 	c.String(http.StatusOK, "%s", b)
 }
@@ -74,6 +80,9 @@ func ipHandler(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
+	z.Info("ip", zap.String("ip", c.ClientIP()), zap.String("target", ip))
+
 	results, err := ipDB.Get_all(ip)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -98,6 +107,8 @@ func ipHandler(c *gin.Context) {
 }
 
 func versionHandler(c *gin.Context) {
+	z.Info("version", zap.String("ip", c.ClientIP()))
+
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
@@ -166,6 +177,9 @@ func pingHandler(c *gin.Context) {
 	target := c.Query("t")
 	protocolStr := c.Query("p")
 	remoteDNS := c.Query("rd")
+
+	z.Info("ping", zap.String("ip", c.ClientIP()),
+		zap.String("target", target), zap.String("protocol", protocolStr), zap.String("remoteDNS", remoteDNS))
 
 	protocol, err := strconv.Atoi(protocolStr)
 	if err != nil {
@@ -270,6 +284,10 @@ func tracerouteHandler(c *gin.Context) {
 	target := c.Query("t")
 	protocolStr := c.Query("p")
 	remoteDNS := c.Query("rd")
+
+	z.Info("traceroute", zap.String("ip", c.ClientIP()),
+		zap.String("node", node), zap.String("target", target),
+		zap.String("protocol", protocolStr), zap.String("remoteDNS", remoteDNS))
 
 	var match bool
 	for key, _ := range serverList {
@@ -386,6 +404,10 @@ func mtrHandler(c *gin.Context) {
 	target := c.Query("t")
 	protocolStr := c.Query("p")
 	remoteDNS := c.Query("rd")
+
+	z.Info("mtr", zap.String("ip", c.ClientIP()),
+		zap.String("node", node), zap.String("target", target),
+		zap.String("protocol", protocolStr), zap.String("remoteDNS", remoteDNS))
 
 	var match bool
 	for key, _ := range serverList {
@@ -562,6 +584,14 @@ func main() {
 		initServerList()
 	})
 	viper.WatchConfig()
+
+	// logger
+	z, _ = zap.NewProduction()
+	newrelic.NewApplication(
+		newrelic.ConfigAppName(viper.GetString("newrelic_name")),
+		newrelic.ConfigLicense(viper.GetString("newrelic_license")),
+		nrzap.ConfigLogger(z.Named("newrelic")),
+	)
 
 	// Set up a connection to the server.
 	initServerList()
