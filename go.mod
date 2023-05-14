@@ -3,7 +3,7 @@ module git.esd.cc/imlonghao/mtr.sb
 go 1.20
 
 require (
-	github.com/JGLTechnologies/gin-rate-limit v1.5.4
+	github.com/JGLTechnologies/gin-rate-limit/v2 v2.0.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/ip2location/ip2location-go/v9 v9.6.0
