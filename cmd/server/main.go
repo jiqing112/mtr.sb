@@ -608,8 +608,8 @@ func main() {
 	}
 
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
-		Rate:  time.Second,
-		Limit: 10,
+		Rate:  time.Second * 10,
+		Limit: 1,
 	})
 	mw := ratelimit.RateLimiter(store, &ratelimit.Options{
 		ErrorHandler: func(c *gin.Context, info ratelimit.Info) {
