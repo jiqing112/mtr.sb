@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"git.esd.cc/imlonghao/mtr.sb/pkgs/bgptools"
 	"git.esd.cc/imlonghao/mtr.sb/proto"
+	"github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
 	"github.com/ip2location/ip2location-go/v9"
@@ -606,14 +607,30 @@ func main() {
 		log.Fatalf("fail to load ip2location db: %v", err)
 	}
 
+	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
+		Rate:  time.Second,
+		Limit: 10,
+	})
+	mw := ratelimit.RateLimiter(store, &ratelimit.Options{
+		ErrorHandler: func(c *gin.Context, info ratelimit.Info) {
+			c.String(429, "Too many requests. Try again in "+time.Until(info.ResetTime).String())
+		},
+		KeyFunc: func(c *gin.Context) string {
+			return c.ClientIP()
+		},
+	})
+
 	router := gin.Default()
 	api := router.Group("/api")
-	api.GET("/ping", pingHandler)
-	api.GET("/traceroute", tracerouteHandler)
+
+	api.GET("/ping", mw, pingHandler)
+	api.GET("/traceroute", mw, tracerouteHandler)
+	api.GET("/mtr", mw, mtrHandler)
+
 	api.GET("/servers", serverListHandler)
-	api.GET("/mtr", mtrHandler)
 	api.GET("/ip", ipHandler)
 	api.GET("/version", versionHandler)
+
 	router.NoRoute(catchAllPath, gin.WrapH(http.FileServer(gin.Dir("build", false))))
 	router.Run(":8085")
 }
